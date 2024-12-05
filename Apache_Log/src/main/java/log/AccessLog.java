@@ -4,7 +4,8 @@ public class AccessLog {
     private String ip;
     private String log;
     private String userID;
-    private String dateTime;
+    private String date;
+    private String time;
     private String request;
     private int status;
     private int size;
@@ -15,11 +16,12 @@ public class AccessLog {
 
     }
 
-    public AccessLog(String ip, String log, String userID, String dateTime, String request, int status, int size, String referer, String userAgent) {
+    public AccessLog(String ip, String log, String userID, String date,String time, String request, int status, int size, String referer, String userAgent) {
         this.ip = ip;
         this.log = log;
         this.userID = userID;
-        this.dateTime = dateTime;
+        this.date = date;
+        this.time = time;
         this.request = request;
         this.status = status;
         this.size = size;
@@ -51,12 +53,19 @@ public class AccessLog {
         this.userID = userID;
     }
 
-    public String getDateTime() {
-        return dateTime;
+    public String getDate() {
+        return date;
     }
 
-    public void setDateTime(String dateTime) {
-        this.dateTime = dateTime;
+    public void setDate(String date) {
+        this.date = date;
+    }
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
     }
 
     public String getRequest() {
