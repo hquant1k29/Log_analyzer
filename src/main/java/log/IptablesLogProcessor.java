@@ -1,3 +1,4 @@
+// Xử l log
 package log;
 
 import java.util.ArrayList;
