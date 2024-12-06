@@ -22,7 +22,7 @@ public class IptablesLogProcessor {
             if (log.contains("SRC=") && log.contains("DST=")) {
                 try {
                     // Trích xuất các trường dữ liệu từ log
-                    Date timestamp = TimeUtils.parseTimestamp(log.substring(0, 15)); // Phần đầu log chứa thời gian
+                    Date timestamp = TimeUtils.parseTimestamp(log.substring(0, 18)); // Phần đầu log chứa thời gian
                     String inInterface = log.contains("IN=") ? log.split("IN=")[1].split(" ")[0] : null;
                     String outInterface = log.contains("OUT=") ? log.split("OUT=")[1].split(" ")[0] : null;
                     String sourceIP = log.split("SRC=")[1].split(" ")[0];
