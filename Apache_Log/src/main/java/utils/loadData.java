@@ -19,9 +19,9 @@ public class loadData {
     private int tmpSize = 0;
     private double totalSize = 0;
 
-    private HashMap<String,Integer> dateMap = new HashMap<String,Integer>();
-    private HashMap<String,Integer> timeMap = new HashMap<String,Integer>();
-    private HashMap<String,Integer> proto = new HashMap<String,Integer>();
+    private  HashMap<String,Integer> dateMap = new HashMap<>();
+    private HashMap<String,Integer> timeMap = new HashMap<>();
+    private HashMap<String,Integer> proto = new HashMap<>();
     private final String fileName = "src/main/resources/data/apache_logs.txt";
     public loadData(){
 
@@ -31,7 +31,6 @@ public class loadData {
         ArrayList<AccessLog> list = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             String line;
-            stringCompare s = new stringCompare();
             Pattern pattern = Pattern.compile("\"([^\"]*)\"|\\[([^\\]]*)\\]|\\S+"); // regrex split string to groups
             while ((line = br.readLine()) != null) {
                 ArrayList<String> temp = new ArrayList();
@@ -50,8 +49,8 @@ public class loadData {
                     }
                 }
                 // handle format date,time
-                int temp5 = 0, temp6 = 0;
-                String date = "", time = "";
+                int temp5 , temp6;
+                String date , time;
                 try {
                     try {
                         temp5 = Integer.parseInt(temp.get(5));
@@ -71,7 +70,7 @@ public class loadData {
                         if(temp5 >= 400) totalFail++;
                         tmpSize += temp6;
                         if(tmpSize > 1000000){
-                            totalSize += (double)(tmpSize * 1.0)/1000000;
+                            totalSize += (tmpSize * 1.0)/1000000;
                             tmpSize = 0;
                         }
                         //totalSize += temp6;
@@ -84,6 +83,7 @@ public class loadData {
                     } catch (NumberFormatException e) {
                         temp5 = 0;
                         temp6 = 0;
+                        System.err.println("Error Number Format: " + e.getMessage());
                     }
                 }
                 catch(StringIndexOutOfBoundsException e){
@@ -100,25 +100,15 @@ public class loadData {
         return total;
     }
 
-    public void setTotal(int total) {
-        this.total = total;
-    }
-
     public int getTotalFail() {
         return totalFail;
     }
 
-    public void setTotalFail(int totalFail) {
-        this.totalFail = totalFail;
-    }
 
     public double getTotalSize() {
         return totalSize;
     }
 
-    public void setTotalSize(double totalSize) {
-        this.totalSize = totalSize;
-    }
     public HashMap<String, Integer> getDateMap() {
         return dateMap;
     }

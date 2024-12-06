@@ -4,18 +4,13 @@ import javafx.scene.Parent;
 import log.AccessLog;
 import utils.*;
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Main extends Application{
-    private final String dirFile = "Apache_Log/src/main/resources/views/Home.fxml";
+    //private final String dirFile = "Apache_Log/src/main/resources/views/Home.fxml";
     public static void main(String[] args) {
         launch(args);
         System.out.println((float)(10*1.0/1000000));
@@ -36,20 +31,20 @@ public class Main extends Application{
         System.out.println("Total Request in 2015-05-18:" + x.getTimeMap().get("2015-05-1804"));
        // result = s.Search("");
         //result = s.SearchByDate(result,"2015-05-16","2015-05-18");
-        int dem = 0;
-        for(AccessLog log : result){
-            System.out.println(log.getIp());
+        //int dem = 0;
+       // for(AccessLog log : result){
+            //System.out.println(log.getIp());
             //System.out.println(log.getLog());
             //System.out.println(log.getUserID());
-            System.out.println(log.getDate() + log.getTime());
+            //System.out.println(log.getDate() + log.getTime());
             //System.out.println(log.getRequest());
             //System.out.println(log.getStatus());
             //System.out.println(log.getSize());
             //System.out.println(log.getReferer());
             //System.out.println(log.getUserAgent());
-            dem ++;
-        }
-        System.out.println(dem);
+            //dem ++;
+        //}
+        //System.out.println(dem);
 
     }
 
@@ -58,8 +53,8 @@ public class Main extends Application{
         try{
             stage.setTitle("Apache Log");
             System.out.println("Working Directory = " + System.getProperty("user.dir"));
-            Parent root = FXMLLoader.load(getClass().getResource("/views/Home.fxml"));
-            Scene scene = new Scene(root);
+            Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/views/Apache_log.fxml")));
+            Scene scene = new Scene(root,1280,768);
             stage.setScene(scene);
             stage.show();
         } catch(Exception e){
