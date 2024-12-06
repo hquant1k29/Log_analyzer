@@ -9,28 +9,30 @@ import javax.swing.*;
 import java.util.Map;
 
 /**
- * Lớp để vẽ biểu đồ số lượng đăng nhập.
+ * Lớp để vẽ biểu đồ số lượng đăng nhập theo giờ.
  */
 public class LoginChart {
 
     /**
-     * Hiển thị biểu đồ số lượng đăng nhập.
+     * Hiển thị biểu đồ số lượng đăng nhập theo giờ.
      *
-     * @param loginCounts Map chứa thời gian và số lượng đăng nhập.
+     * @param hourlyLogins Map chứa giờ và số lượng đăng nhập.
+     * @param date         Ngày cần phân tích (để hiển thị trên tiêu đề biểu đồ).
      */
-    public void displayLoginChart(Map<String, Integer> loginCounts) {
+    public void displayLoginChartByHour(Map<Integer, Integer> hourlyLogins, String date) {
         // Tạo dataset cho biểu đồ
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        for (Map.Entry<String, Integer> entry : loginCounts.entrySet()) {
-            dataset.addValue(entry.getValue(), "Logins", entry.getKey());
+        for (Map.Entry<Integer, Integer> entry : hourlyLogins.entrySet()) {
+            String hourLabel = entry.getKey() + ":00"; // Hiển thị giờ dưới dạng 0:00, 1:00, ...
+            dataset.addValue(entry.getValue(), "Logins", hourLabel);
         }
 
         // Tạo biểu đồ dạng cột
         JFreeChart barChart = ChartFactory.createBarChart(
-                "Login Activity",        // Tiêu đề biểu đồ
-                "Time Period",           // Nhãn trục X
-                "Number of Logins",      // Nhãn trục Y
-                dataset                  // Dataset
+                "Login Activity by Hour (" + date + ")", // Tiêu đề biểu đồ
+                "Hour",                                  // Nhãn trục X
+                "Number of Logins",                      // Nhãn trục Y
+                dataset                                  // Dataset
         );
 
         // Hiển thị biểu đồ

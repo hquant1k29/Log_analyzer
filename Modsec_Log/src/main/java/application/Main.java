@@ -1,9 +1,11 @@
 package application;
 
+import chart.LoginChart;
 import model.LogEntry;
 import utils.SearchEngine;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Main {
@@ -55,9 +57,13 @@ public class Main {
                     System.out.println("Request Count: " + requestCount);
                 }
                 case 4  -> {
-                    System.out.println("choose day for analyze");
-                    String focusDay = scanner.nextLine();
-                    System.out.println("\nDisplay login activity chart by hour");
+                    System.out.println("choose day for analyze :");
+                    String date = scanner.nextLine();
+
+                    System.out.println("\nGenerating login activity chart by hour...");
+                    Map<Integer, Integer> hourlyLogins = searchEngine.analyzeLoginsByHour(date);
+                    LoginChart loginChart = new LoginChart();
+                    loginChart.displayLoginChartByHour(hourlyLogins, date);
 
                 }
 

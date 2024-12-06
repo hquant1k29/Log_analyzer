@@ -9,6 +9,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Lớp hỗ trợ tìm kiếm và phân tích log ModSecurity.
@@ -171,6 +173,54 @@ public class SearchEngine {
         }
         return count; // Trả về tổng số request
     }
+    /**
+     * Đếm số lượng đăng nhập theo giờ trong một ngày cụ thể.
+     *
+     * @param date Ngày cần phân tích (định dạng: dd/MMM/yyyy, ví dụ: 01/May/2018).
+     * @return Map chứa giờ (0-23) và số lượng đăng nhập trong từng giờ.
+     */
+    public Map<Integer, Integer> analyzeLoginsByHour(String date) {
+        Map<Integer, Integer> hourlyLogins = new TreeMap<>(); // TreeMap để sắp xếp theo giờ
+        try (BufferedReader br = new BufferedReader(new FileReader("D:\\0.Analyze\\Log_analyzer\\Modsec_Log\\src\\main\\resources\\modsec_logs.txt"))) {
+            String line;
+            StringBuilder currentBlock = new StringBuilder();
+
+            while ((line = br.readLine()) != null) {
+                // Khi gặp block mới, kiểm tra block trước đó
+                if (line.startsWith("--") && line.endsWith("--")) {
+                    if (currentBlock.length() > 0) {
+                        LogEntry logEntry = parseLogEntry(currentBlock.toString());
+                        if (logEntry != null && logEntry.getRequestUri().contains("login")) {
+                            String timestamp = logEntry.getTimestamp();
+                            if (timestamp.startsWith(date)) { // Kiểm tra ngày trùng khớp
+                                int hour = Integer.parseInt(timestamp.substring(12, 14)); // Lấy giờ
+                                hourlyLogins.put(hour, hourlyLogins.getOrDefault(hour, 0) + 1);
+                            }
+                        }
+                        currentBlock.setLength(0);
+                    }
+                }
+                currentBlock.append(line).append("\n");
+            }
+
+            // Xử lý block cuối cùng
+            if (currentBlock.length() > 0) {
+                LogEntry logEntry = parseLogEntry(currentBlock.toString());
+                if (logEntry != null && logEntry.getRequestUri().contains("login")) {
+                    String timestamp = logEntry.getTimestamp();
+                    if (timestamp.startsWith(date)) {
+                        int hour = Integer.parseInt(timestamp.substring(12, 14));
+                        hourlyLogins.put(hour, hourlyLogins.getOrDefault(hour, 0) + 1);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading log file: " + e.getMessage());
+        }
+        return hourlyLogins; // Trả về Map chứa giờ và số lượng đăng nhập
+    }
+
+
 
 
     /**
@@ -201,10 +251,7 @@ public class SearchEngine {
             }
         }
 
-
-
         String timestamp = logBlock.contains("[") ? logBlock.split("\\[")[1].split("\\]")[0] : "Unknown";
-
         String requestUri = "Unknown";
         String userAgent = "Unknown";
         String message = "Unknown";
