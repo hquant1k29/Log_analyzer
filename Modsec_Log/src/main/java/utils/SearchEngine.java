@@ -28,7 +28,7 @@ public class SearchEngine {
      */
     public ArrayList<LogEntry> searchByField(String field, String value) {
         ArrayList<LogEntry> results = new ArrayList<>(); // Danh sách kết quả
-        try (BufferedReader br = new BufferedReader(new FileReader("D:\\0.Analyze\\Log_analyzer\\Modsec_Log\\src\\main\\resources\\modsec_logs.txt"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader("D:\\0.NewAnalyze\\Log_analyzer\\Modsec_Log\\src\\main\\resources\\modsec_logs.txt"))) {
             String line;
             StringBuilder currentBlock = new StringBuilder(); // Dùng để lưu block log hiện tại
 
@@ -88,7 +88,7 @@ public class SearchEngine {
      */
     public int countRequestsInTimeRange(String startTime, String endTime) {
         int count = 0;
-        try (BufferedReader br = new BufferedReader(new FileReader("D:\\0.Analyze\\Log_analyzer\\Modsec_Log\\src\\main\\resources\\modsec_logs.txt"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader("D:\\0.NewAnalyze\\Log_analyzer\\Modsec_Log\\src\\main\\resources\\modsec_logs.txt"))) {
             String line;
             StringBuilder currentBlock = new StringBuilder();
             Date startDate = dateFormat.parse(startTime); // Phân tích thời gian bắt đầu
@@ -143,7 +143,7 @@ public class SearchEngine {
      */
     public int countTotalRequests() {
         int count = 0; // Biến đếm tổng số request
-        try (BufferedReader br = new BufferedReader(new FileReader("D:\\0.Analyze\\Log_analyzer\\Modsec_Log\\src\\main\\resources\\modsec_logs.txt"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader("D:\\0.NewAnalyze\\Log_analyzer\\Modsec_Log\\src\\main\\resources\\modsec_logs.txt"))) {
             String line;
             StringBuilder currentBlock = new StringBuilder(); // Lưu block log hiện tại
 
@@ -181,7 +181,7 @@ public class SearchEngine {
      */
     public Map<Integer, Integer> analyzeLoginsByHour(String date) {
         Map<Integer, Integer> hourlyLogins = new TreeMap<>(); // TreeMap để sắp xếp theo giờ
-        try (BufferedReader br = new BufferedReader(new FileReader("D:\\0.Analyze\\Log_analyzer\\Modsec_Log\\src\\main\\resources\\modsec_logs.txt"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader("D:\\0.NewAnalyze\\Log_analyzer\\Modsec_Log\\src\\main\\resources\\modsec_logs.txt"))) {
             String line;
             StringBuilder currentBlock = new StringBuilder();
 
