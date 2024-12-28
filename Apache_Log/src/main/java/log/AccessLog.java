@@ -12,10 +12,6 @@ public class AccessLog {
     private String referer;
     private String userAgent;
 
-    public AccessLog(){
-
-    }
-
     public AccessLog(String ip, String log, String userID, String date,String time, String request, int status, int size, String referer, String userAgent) {
         this.ip = ip;
         this.log = log;

@@ -15,7 +15,7 @@ public class stringCompare {
         }
         for(int i = 0; i < pat.length(); i++){
             //badchar[(int)pat[i]] = i;
-            badchar[(int)pat.charAt(i)] = i;
+            badchar[pat.charAt(i)] = i;
         }
        int s = 0;
         while (s <= (n - m)) {

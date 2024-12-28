@@ -1,34 +1,32 @@
 package application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import log.AccessLog;
-import utils.*;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import java.util.ArrayList;
 import java.util.Objects;
 
 public class Main extends Application{
     //private final String dirFile = "Apache_Log/src/main/resources/views/Home.fxml";
     public static void main(String[] args) {
         launch(args);
-        System.out.println((float)(10*1.0/1000000));
 
-        ArrayList<AccessLog> result = new ArrayList<>();
+        //ArrayList<AccessLog> result = new ArrayList<>();
         //stringCompare s = new stringCompare();
         //int n = s.BoyerMoore("Request 127.0.0.1 GET HTTP","GET");
         //System.out.println(n);
         System.out.println("Working Directory: " + System.getProperty("user.dir"));
         //searchEngine s = new searchEngine();
 
-        loadData x = new loadData();
-        result = x.load();
-        System.out.println("Total Request:" + x.getTotal());
-        System.out.println("Total size Request:" + x.getTotalSize());
-        System.out.println("Total Fail:" + x.getTotalFail());
-        System.out.println("Total Request in 2015-05-18:" + x.getDateMap().get("2015-05-18"));
-        System.out.println("Total Request in 2015-05-18:" + x.getTimeMap().get("2015-05-1804"));
+        //loadData x = new loadData();
+        //result = x.load();
+
+//        System.out.println("Total Request:" + x.getTotal());
+//        System.out.println("Total size Request:" + x.getTotalSize());
+//        System.out.println("Total Fail:" + x.getTotalFail());
+//        System.out.println("Total Fail:" + x.getProto().get("GET"));
+//        System.out.println("Total Request in 2015-05-18:" + x.getDateMap().get("2015-05-18"));
+//        System.out.println("Total Request in 2015-05-18:" + x.getTimeMap().get("2015-05-1804"));
        // result = s.Search("");
         //result = s.SearchByDate(result,"2015-05-16","2015-05-18");
         //int dem = 0;
@@ -58,7 +56,7 @@ public class Main extends Application{
             stage.setScene(scene);
             stage.show();
         } catch(Exception e){
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
     }
 }
