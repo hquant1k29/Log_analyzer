@@ -65,7 +65,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="IPTable_Log" />
+                        <option value="Modsec_Log" />
                       </list>
                     </value>
                   </entry>
