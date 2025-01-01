@@ -1,7 +1,9 @@
 package controller;
 
+import javafx.scene.Parent;
 import javafx.scene.chart.*;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import utils.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -12,6 +14,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 
 public class ApacheController {
@@ -64,7 +67,6 @@ public class ApacheController {
     @FXML
     private NumberAxis yAxis;
     private final ObservableList<AccessLog> masterData = FXCollections.observableArrayList();
-    private XYChart.Series<String, Number> series = new XYChart.Series<>();
     @FXML
     public void initialize() {
         ipColumn.setCellValueFactory(new PropertyValueFactory<>("ip"));
@@ -78,40 +80,17 @@ public class ApacheController {
         refererColumn.setCellValueFactory(new PropertyValueFactory<>("referer"));
         userAgentColumn.setCellValueFactory(new PropertyValueFactory<>("userAgent"));
 
-        // test
-        xAxis.setLabel("Time");
-        yAxis.setLabel("Number of request");
+//        searchEngine s = new searchEngine();
+//        s.Search("","2015-05-15","2015-05-25","","");
+//        LocalDate begin = LocalDate.of(2015,5,15);
+//        LocalDate end = LocalDate.of(2015,5,25);
+//
+//        drawChartByDate(begin,end,s.getTimeMap());
 
-        // Tạo BarChart
-        //barChart.setTitle("Number of request in hour");
+        //NumberAxis yAxis = (NumberAxis) barChart.getYAxis();
 
-        // Tạo dữ liệu
+//        drawChartByTime("2015-05-19",s.getTimeMap());
 
-        series.setName("Request by time");
-
-        // Thêm dữ liệu cho từng giờ
-        int[] requests = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-        for (int hour = 0; hour < 24; hour++) {
-            series.getData().add(new XYChart.Data<>(hour + "h", requests[hour]));
-        }
-
-        // Thêm series vào biểu đồ
-         barChart.getData().add(series);
-        // loadData x = new loadData();
-        //ArrayList<AccessLog> list = x.load();
-       // PieChart.Data FailData = new PieChart.Data("404", 0);  // Số lượng POST requests
-       // PieChart.Data SucData = new PieChart.Data("200", 100);    // Số lượng GET requests
-//        PieChart.Data deleteData = new PieChart.Data("DELETE", 0); // Số lượng DELETE requests
-//        PieChart.Data putData = new PieChart.Data("PUT", 0);    // Số lượng PUT requests
-       //  Thêm dữ liệu vào PieChart
-       // pieChart.getData().addAll(FailData, SucData);
-       //  Thêm dữ liệu mẫu để kiểm tra
-        //toRequest.setText(Integer.toString(x.getTotal()));
-        //String toSizeString = String.format("%.2f",x.getTotalSize());
-        //toSize.setText(toSizeString + "  Gb");
-        //toFail.setText(Integer.toString(x.getTotalFail()));
-       // masterData.addAll(list);
-        //tableView.setItems(masterData);
     }
     public void Search(){
         String nbegin = "",nend = "";
@@ -130,40 +109,46 @@ public class ApacheController {
         }
         searchEngine s = new searchEngine();
         ArrayList<AccessLog> nlist = new ArrayList<>();
-        //System.out.println("Number of request in date" + s.getDateMap().get("2024-12-13"));
+
         try {
             String text = searchField.getText();
             nlist = s.Search(text,nbegin,nend,beginT,endT);
             toRequest.setText(Integer.toString(s.getTotal()));
-            LocalDate begin = beginDate.getValue();
-            LocalDate end = endDate.getValue();
 
         } catch(NullPointerException e){
             System.out.println(e.getMessage());
         }
-        series.setName("Request by time");
-        HashMap<String,Integer> time = s.getTimeMap();
-        drawData(nend,time);
-        // Thêm dữ liệu cho từng giờ
-        //int[] requests = {s.getTimeMap().get(nbegin + "00"), 0, s.getTimeMap().get(nbegin + "02"), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-//        for (int hour = 0; hour < 24; hour++) {
-//            series.getData().add(new XYChart.Data<>(hour + "h", requests[hour]));
-//        }
 
-        // Thêm series vào biểu đồ
-        //barChart.getData().add(series);
-        //PieChart.Data FailData = new PieChart.Data("404", s.getStatusMap().get(404));  // Số lượng POST requests
-        //PieChart.Data SucData = new PieChart.Data("200", s.getStatusMap().get(200));    // Số lượng GET requests
-        //pieChart.getData().addAll(FailData, SucData);
-        //System.out.println("Number of request in date" + s.getTimeMap().get(nbegin + "02"));
-//        for(int i = 0; i <= 100; i++){
-//            filteredData.add(nlist.get(i));
-//        }
-         filteredData.addAll(nlist);
+        HashMap<String,Integer> time = s.getTimeMap();
+        if(!nend.equals(nbegin)){
+            drawChartByDate(beginD,endD,time);
+        }
+        else{
+            drawChartByTime(nend,time);
+
+        }
+        int [] statusMap = s.getStatusMap();
+        drawPieChart(statusMap);
+        // Thêm dữ liệu cho từng giờ
+
+        filteredData.addAll(nlist);
         tableView.setItems(filteredData);
         //filteredData.clear();
     }
-    public void drawData(String date, HashMap<String,Integer> timeMap){
+    public void drawChartByTime(String date, HashMap<String,Integer> timeMap){
+        // XYChart.Series<String, Number> tmp = barChart.getData().getLast();
+        // CategoryAxis xAxis = (CategoryAxis) barChart.getXAxis();
+        // xAxis.getCategories().clear();
+        // xAxis.setAutoRanging(false);
+        for (XYChart.Series<String, Number> series : barChart.getData()) {
+            for (XYChart.Data<String, Number> data : series.getData()) {
+                series.getData().remove(data);
+            }
+        }
+
+
+        XYChart.Series<String, Number> series1 = new XYChart.Series<>();
+
         int[] requests = new int[24];
         for(int i = 0; i < 24; i++){
             try {
@@ -174,9 +159,67 @@ public class ApacheController {
             }
         }
         for (int hour = 0; hour < 24; hour++) {
-            series.getData().add(new XYChart.Data<>(hour + "h", requests[hour]));
+            series1.getData().add(new XYChart.Data<>(hour + "h", requests[hour]));
         }
-        barChart.getData().clear();
-        barChart.getData().add(series);
+        barChart.getData().add(series1);
+        barChart.layout();
+    }
+    public void drawChartByDate(LocalDate nbgin,LocalDate nend, HashMap<String,Integer> timeMap){
+        int count = 0;
+
+//        barChart.getData().clear();
+
+        for (XYChart.Series<String, Number> series : barChart.getData()) {
+            for (XYChart.Data<String, Number> data : series.getData()) {
+                series.getData().remove(data);
+            }
+        }
+//        CategoryAxis xAxis = (CategoryAxis) barChart.getXAxis();
+//        xAxis.setAutoRanging(false);
+//        xAxis.getCategories().clear();
+
+        XYChart.Series<String, Number> series1 = new XYChart.Series<>();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate currentDate = nbgin;
+        while (!currentDate.isAfter(nend)) {
+            count ++;
+            String curDate = currentDate.format(formatter);
+            xAxis.getCategories().add(curDate);
+            int value = timeMap.getOrDefault(curDate, 0);
+            XYChart.Data<String, Number> data = new XYChart.Data<>(curDate, value);
+            series1.getData().add(data);
+
+            data.nodeProperty().addListener((obs, oldNode, newNode) -> {
+                if (newNode != null) {
+                    Tooltip tooltip = new Tooltip("Date: " + curDate + "\nValue: " + value);
+                    Tooltip.install(newNode, tooltip);
+                }
+            });
+
+            System.out.println(curDate +": " + timeMap.getOrDefault(curDate,0));
+            System.out.println(currentDate); // In ngày theo định dạng dd-MM-yyyy
+            currentDate = currentDate.plusDays(1); // Tăng ngày thêm 1 ngày
+        }
+
+        if(count >= 12) xAxis.setTickLabelRotation(90);
+        barChart.getData().add(series1);
+        for (XYChart.Data<String, Number> item : series1.getData()) {
+            item.getNode().setOnMousePressed((MouseEvent event) -> {
+                String datePicked = item.getXValue();
+                barChart.getData().clear();
+                drawChartByTime(datePicked,timeMap);
+                System.out.println("Filter by this colume: " + item.getXValue());
+            });
+        }
+    }
+    public void drawPieChart(int [] StatusMap){
+        pieChart.getData().clear();
+        for(int i = 100; i <= 520; i++){
+            if(StatusMap[i] != 0){
+                PieChart.Data slice = new PieChart.Data("" + i,StatusMap[i]);
+                pieChart.getData().add(slice); // Thêm phần tử vào PieChart
+            }
+        }
     }
 }

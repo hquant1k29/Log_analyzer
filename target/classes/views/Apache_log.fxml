@@ -24,9 +24,9 @@
       <VBox layoutY="443.0" prefHeight="317.0" prefWidth="1287.0">
          <children>
             <TableView fx:id="tableView" prefHeight="396.0" prefWidth="1287.0">
-              <columns>
-                <TableColumn fx:id="ipColumn" prefWidth="120.79995423555374" text="IP Address" />
-                <TableColumn fx:id="logColumn" prefWidth="51.20001220703125" text="Log" />
+               <columns>
+                  <TableColumn fx:id="ipColumn" prefWidth="120.79995423555374" text="IP Address" />
+                  <TableColumn fx:id="logColumn" prefWidth="51.20001220703125" text="Log" />
                   <TableColumn fx:id="userIDColumn" prefWidth="54.399993896484375" text="ID User" />
                   <TableColumn fx:id="dateColumn" prefWidth="96.80006408691406" text="Date" />
                   <TableColumn fx:id="timeColumn" prefWidth="99.2000732421875" text="Time" />
@@ -35,7 +35,7 @@
                   <TableColumn fx:id="sizeColumn" prefWidth="62.4000244140625" text="Size" />
                   <TableColumn fx:id="refererColumn" prefWidth="208.7999267578125" text="Referer" />
                   <TableColumn fx:id="userAgentColumn" prefWidth="200.79998779296875" text="User Agent" />
-              </columns>
+               </columns>
             </TableView>
          </children>
       </VBox>
@@ -107,18 +107,18 @@
          <children>
             <HBox prefHeight="150.0" prefWidth="336.0">
                <children>
-                  <BarChart fx:id="barChart" prefHeight="318.0" prefWidth="506.0">
-                    <xAxis>
-                      <CategoryAxis side="BOTTOM" fx:id="xAxis" />
-                    </xAxis>
-                    <yAxis>
-                      <NumberAxis fx:id="yAxis" side="LEFT" />
-                    </yAxis>
+                  <BarChart fx:id="barChart" prefHeight="318.0" prefWidth="755.0">
+                     <xAxis>
+                        <CategoryAxis side="BOTTOM" fx:id="xAxis" />
+                     </xAxis>
+                     <yAxis>
+                        <NumberAxis fx:id="yAxis" side="LEFT" />
+                     </yAxis>
                      <HBox.margin>
                         <Insets left="30.0" />
                      </HBox.margin>
                   </BarChart>
-                  <PieChart fx:id="pieChart" prefHeight="336.0" prefWidth="421.0">
+                  <PieChart fx:id="pieChart" prefHeight="318.0" prefWidth="333.0">
                      <HBox.margin>
                         <Insets left="50.0" />
                      </HBox.margin>

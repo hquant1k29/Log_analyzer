@@ -35,13 +35,14 @@ public class searchEngine implements Comparator<AccessLog> {
         statusMap = new int[600];
         System.out.println("Working Directory = " + System.getProperty("user.dir"));
         String fileName = "src/main/resources/data/apache_logs.txt";
+        // String fileName = "Apache_Log/src/main/resources/data/access1.txt";
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             String line;
             stringCompare s = new stringCompare();
             Pattern pattern = Pattern.compile("\"([^\"]*)\"|\\[([^]]*)]|\\S+"); // regrex split string to groups
 
             while ((line = br.readLine()) != null) {
-                 total ++;
+                total ++;
                 if (s.BoyerMoore(line, pat) == 1) {
                     // Split line to fields
                     ArrayList<String> temp = getStrings(pattern, line);
