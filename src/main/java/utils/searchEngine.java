@@ -41,7 +41,6 @@ public class searchEngine implements Comparator<AccessLog> {
             Pattern pattern = Pattern.compile("\"([^\"]*)\"|\\[([^]]*)]|\\S+"); // regrex split string to groups
 
             while ((line = br.readLine()) != null) {
-                total ++;
                 if (s.BoyerMoore(line, pat) == 1) {
                     // Split line to fields
                     ArrayList<String> temp = getStrings(pattern, line);
@@ -75,6 +74,7 @@ public class searchEngine implements Comparator<AccessLog> {
                         list.add(a);
                         String[] httpPro = temp.get(4).split("\\s+");
                         try {
+                            total ++;
                             timeMap.merge(date,1,Integer::sum);
                             timeMap.merge(date + time.substring(0,2),1,Integer::sum);
                             timeMap.merge(date + time.substring(0,5),1,Integer::sum);

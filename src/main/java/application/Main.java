@@ -51,8 +51,9 @@ public class Main extends Application{
         try{
             stage.setTitle("Apache Log");
             System.out.println("Working Directory = " + System.getProperty("user.dir"));
-            Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/views/Apache_log.fxml")));
-            Scene scene = new Scene(root,1280,768);
+            // Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/views/Apache_log.fxml")));
+            Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/views/Home.fxml")));
+            Scene scene = new Scene(root,1280,800);
             stage.setScene(scene);
             stage.show();
         } catch(Exception e){

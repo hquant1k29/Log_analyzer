@@ -1,0 +1,23 @@
+.submit-button {
+  -fx-background-color: #576aca;
+  -fx-text-fill: white;
+  -fx-font-size: 16px;
+  -fx-padding: 10px 20px;
+  -fx-border: none;
+  -fx-background-radius: 8px;
+  -fx-border-radius: 8px;
+  -fx-cursor: hand; /* Thay đổi con trỏ chuột khi hover */
+  -fx-transition: all 0.3s ease; /* Hiệu ứng chuyển đổi mượt mà */
+}
+
+.submit-button:hover {
+  -fx-background-color: #4d5fac; /* Màu nền đậm hơn khi hover */
+  -fx-text-fill: white;
+}
+
+.submit-button:pressed {
+  -fx-background-color: #404a93; /* Màu nền đậm hơn nữa khi click */
+}
+.head {
+    -fx-background-color: #576aca;
+}
