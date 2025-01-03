@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -56,11 +57,17 @@ public class searchEngine implements Comparator<AccessLog> {
                             temp6 = 0;
                         }
                         String dateTime = temp.get(3);
-                        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("dd/MMM/yyyy:HH:mm:ss Z");
-                        // Định dạng output mong muốn
+                        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("dd/MMM/yyyy:HH:mm:ss Z", Locale.ENGLISH);
+// Định dạng output mong muốn
                         DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-                        // Phân tích và định dạng lại thời gian
-                        LocalDateTime unFormatDateTime = LocalDateTime.parse(dateTime, inputFormatter.withZone(ZoneOffset.UTC));
+
+// Phân tích chuỗi input thành OffsetDateTime
+                        OffsetDateTime offsetDateTime = OffsetDateTime.parse(dateTime, inputFormatter);
+
+// Chuyển đổi sang LocalDateTime (nếu không cần múi giờ)
+                        LocalDateTime unFormatDateTime = offsetDateTime.toLocalDateTime();
+
+// Định dạng lại thời gian
                         String formattedTime = unFormatDateTime.format(outputFormatter);
                         date = formattedTime.substring(0, 10);
                         time = formattedTime.substring(11, 19);
