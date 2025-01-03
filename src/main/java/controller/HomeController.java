@@ -81,12 +81,12 @@ public class HomeController {
 
 
     public void initialize() {
-        iptable.setVisible(false);
-        iptable.setMouseTransparent(true);
+        iptable.setVisible(true);
+        iptable.setMouseTransparent(false);
         modsec.setVisible(false);
         modsec.setMouseTransparent(true);
-        apache.setVisible(true);
-        apache.setMouseTransparent(false);
+        apache.setVisible(false);
+        apache.setMouseTransparent(true);
 
         ipColumn.setCellValueFactory(new PropertyValueFactory<>("ip"));
         logColumn.setCellValueFactory(new PropertyValueFactory<>("log"));
@@ -99,12 +99,17 @@ public class HomeController {
         refererColumn.setCellValueFactory(new PropertyValueFactory<>("referer"));
         userAgentColumn.setCellValueFactory(new PropertyValueFactory<>("userAgent"));
 
-        switchChart(DateChart,TimeChart);
+        switchChart(DateChart,TimeChart,TimeDetailChart);
         XYChart.Series<String, Number> series1 = new XYChart.Series<>();
         for (int hour = 0; hour < 24; hour++) {
             series1.getData().add(new XYChart.Data<>(hour + "h", 0));
         }
         TimeChart.getData().add(series1);
+        XYChart.Series<String, Number> series2 = new XYChart.Series<>();
+        for (int hour = 0; hour < 30; hour++) {
+            series2.getData().add(new XYChart.Data<>(hour + "h", 0));
+        }
+        TimeDetailChart.getData().add(series2);
         // switchChart(DateChart,TimeChart);
 //        searchEngine s = new searchEngine();
 //        s.Search("","2015-05-15","2015-05-25","","");
@@ -117,6 +122,17 @@ public class HomeController {
 
 //        drawChartByTime("2015-05-19",s.getTimeMap());
 
+    }
+    public void switchApache(){
+        iptable.setVisible(false);
+        iptable.setMouseTransparent(true);
+        modsec.setVisible(false);
+        modsec.setMouseTransparent(true);
+        apache.setVisible(true);
+        apache.setMouseTransparent(false);
+        apacheButton.setStyle("-fx-background-color: #404a93;");
+        ModsecButton.setStyle("-fx-background-color: #576aca;");
+        IPTableButton.setStyle("-fx-background-color: #576aca;");
     }
     public void Search(){
         String nbegin = "",nend = "";
@@ -147,12 +163,19 @@ public class HomeController {
 
         HashMap<String,Integer> time = s.getTimeMap();
         if(!nend.equals(nbegin)){
-            switchChart(DateChart,TimeChart);
+            switchChart(DateChart,TimeChart,TimeDetailChart);
             drawChartByDate(beginD,endD,time);
         }
         else{
-            switchChart(TimeChart,DateChart);
-            drawChartByTime(nend,time);
+            if(!endT.isEmpty() && !beginT.isEmpty()){
+                switchChart(TimeDetailChart,DateChart,TimeChart);
+                System.out.println("X:" + beginT.substring(0,2));
+                drawChartbyDetailTime(beginT.substring(0,2),nbegin,time);
+            }
+            else{
+                switchChart(TimeChart,DateChart,TimeDetailChart);
+                drawChartByTime(nend,time);
+            }
         }
         int [] statusMap = s.getStatusMap();
         drawPieChart(statusMap);
@@ -174,7 +197,6 @@ public class HomeController {
         CategoryAxis xAxis = (CategoryAxis) TimeDetailChart.getXAxis();
         xAxis.getCategories().clear();
         XYChart.Series<String, Number> series1 = new XYChart.Series<>();
-
         if(hour.length() == 1){ hour = "0" + hour;}
         int[] requests = new int[61];
         for(int i = 0; i < 60; i++){
@@ -196,21 +218,21 @@ public class HomeController {
                 time = hour + ":" + i;
             }
 
-            XYChart.Data<String, Number> data = new XYChart.Data<>(time, value);
+            XYChart.Data<String, Number> data = new XYChart.Data<>(date +" "+ time, value);
             System.out.println(time + ": " + value);
             series1.getData().add(data);
             data.nodeProperty().addListener((obs, oldNode, newNode) -> {
                 if (newNode != null) {
-                    Tooltip tooltip = new Tooltip("Time: " + time + "\nValue: " + value);
+                    Tooltip tooltip = new Tooltip("Time: "+ date +" " + time + "\nValue: " + value);
                     Tooltip.install(newNode, tooltip);
                 }
             });
-
         }
+        TimeDetailChart.getData().add(series1);
     }
 
     public void drawChartByTime(String date, HashMap<String,Integer> timeMap){
-        switchChart(TimeChart,DateChart);
+        switchChart(TimeChart,DateChart,TimeDetailChart);
         TimeChart.getData().clear();
         CategoryAxis xAxis = (CategoryAxis) TimeChart.getXAxis();
         xAxis.getCategories().clear();
@@ -244,10 +266,22 @@ public class HomeController {
             item.getNode().setOnMousePressed((MouseEvent event) -> {
                 String hourPicked = item.getXValue();
                 hourPicked = hourPicked.substring(0, hourPicked.length() - 1);
-                // setInforSearch(date,date,"","");
-                // this.Search();
+                int tmp = Integer.parseInt(hourPicked) + 1;
+                String nextT = String.valueOf(tmp);
+
+                if(hourPicked.length() == 1){
+                    hourPicked = "0"+ hourPicked + ":00";
+                } else{
+                    hourPicked =  hourPicked + ":00";
+                }
+                if(nextT.length() == 1){
+                    nextT = "0"+ nextT + ":00";
+                } else{
+                    nextT =  nextT + ":00";
+                }
+                setInforSearch(date,date,hourPicked,nextT);
+                this.Search();
                 System.out.println("Filter by this colume: " + item.getXValue());
-                drawChartbyDetailTime(hourPicked,date,timeMap);
             });
         }
     }
@@ -301,13 +335,13 @@ public class HomeController {
         }
     }
 
-    public void switchChart(BarChart<String,Number> X,BarChart<String,Number> Y){
+    public void switchChart(BarChart<String,Number> X,BarChart<String,Number> Y,BarChart<String,Number> Z){
         X.setVisible(true);
         X.setMouseTransparent(false);
         Y.setVisible(false);
         Y.setMouseTransparent(true);
-//        Z.setVisible(true);
-//        Z.setMouseTransparent(false);
+        Z.setVisible(false);
+        Z.setMouseTransparent(true);
     }
 
     // IPTable Controller

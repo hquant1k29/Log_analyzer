@@ -3,6 +3,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import java.util.Objects;
 
@@ -55,6 +56,10 @@ public class Main extends Application{
             Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/views/Home.fxml")));
             Scene scene = new Scene(root,1280,800);
             stage.setScene(scene);
+            stage.setFullScreen(false);
+            stage.setWidth(1280);
+            stage.setHeight(800);
+            //stage.setResizable(false); // Không cho phép thay đổi kích thước cửa sổ
             stage.show();
         } catch(Exception e){
             System.out.println(e.getMessage());
