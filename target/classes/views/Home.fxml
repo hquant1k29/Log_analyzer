@@ -141,29 +141,11 @@
                               <Insets left="50.0" top="20.0" />
                            </HBox.margin>
                         </Pane>
-                        <Pane prefHeight="70.0" prefWidth="170.0" style="-fx-background-color: #ffffff;">
-                           <children>
-                              <Label layoutX="14.0" layoutY="2.0" text="Total Size:">
-                                 <font>
-                                    <Font name="System Bold" size="16.0" />
-                                 </font>
-                              </Label>
-                              <Region prefHeight="49.0" prefWidth="9.0" style="-fx-background-color: #23395d;" />
-                              <Label fx:id="toSize" layoutX="14.0" layoutY="22.0" prefHeight="29.0" prefWidth="143.0" text="Label" textFill="#23395d">
-                                 <font>
-                                    <Font size="16.0" />
-                                 </font>
-                              </Label>
-                           </children>
-                           <HBox.margin>
-                              <Insets left="50.0" top="20.0" />
-                           </HBox.margin>
-                        </Pane>
                      </children>
                   </HBox>
                   <StackPane layoutY="74.0" prefHeight="318.0" prefWidth="1231.0">
                      <children>
-                        <HBox prefHeight="150.0" prefWidth="336.0">
+                        <HBox fx:id="DateBox" prefHeight="150.0" prefWidth="336.0">
                            <children>
                               <StackPane prefHeight="318.0" prefWidth="862.0">
                                  <children>
@@ -198,6 +180,32 @@
                                     <Insets left="50.0" />
                                  </HBox.margin>
                               </PieChart>
+                              <Button mnemonicParsing="false" onAction="#MoreChart" prefHeight="26.0" prefWidth="96.0" text="More" />
+                           </children>
+                           <StackPane.margin>
+                              <Insets right="20.0" />
+                           </StackPane.margin>
+                        </HBox>
+                        <HBox fx:id="CountryBox" layoutX="10.0" layoutY="10.0" prefHeight="150.0" prefWidth="336.0">
+                           <children>
+                              <BarChart fx:id="BarCountry" prefHeight="318.0" prefWidth="721.0">
+                                 <xAxis>
+                                    <CategoryAxis side="BOTTOM" />
+                                 </xAxis>
+                                 <yAxis>
+                                    <NumberAxis side="LEFT" />
+                                 </yAxis>
+                              </BarChart>
+                              <PieChart fx:id="pieCountry" prefHeight="318.0" prefWidth="402.0">
+                                 <HBox.margin>
+                                    <Insets left="50.0" />
+                                 </HBox.margin>
+                              </PieChart>
+                              <Button mnemonicParsing="false" onAction="#TurnBack" prefHeight="26.0" prefWidth="96.0" text="Back">
+                                 <HBox.margin>
+                                    <Insets right="20.0" />
+                                 </HBox.margin>
+                              </Button>
                            </children>
                         </HBox>
                      </children>

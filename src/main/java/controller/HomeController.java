@@ -5,6 +5,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.chart.*;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import utils.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -13,10 +14,8 @@ import log.*;
 import javafx.fxml.FXML;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.net.URL;
-import java.util.ResourceBundle;
 
 public class HomeController {
     @FXML
@@ -25,7 +24,10 @@ public class HomeController {
     private Button ModsecButton;
     @FXML
     private Button IPTableButton;
-
+    @FXML
+    private HBox DateBox;
+    @FXML
+    private HBox CountryBox;
     @FXML
     private AnchorPane apache;
     @FXML
@@ -72,6 +74,10 @@ public class HomeController {
     private TableColumn<AccessLog, String> userAgentColumn;
     @FXML
     private PieChart pieChart;
+    @FXML
+    private PieChart pieCountry;
+    @FXML
+    private BarChart<String,Number> BarCountry;
     @FXML
     private BarChart<String, Number> DateChart;
     @FXML
@@ -124,6 +130,8 @@ public class HomeController {
 
     }
     public void switchApache(){
+        CountryBox.setVisible(false);
+        CountryBox.setMouseTransparent(true);
         iptable.setVisible(false);
         iptable.setMouseTransparent(true);
         modsec.setVisible(false);
@@ -178,11 +186,25 @@ public class HomeController {
             }
         }
         int [] statusMap = s.getStatusMap();
+        HashMap<String,Integer> ipMap = s.getIpMap();
         drawPieChart(statusMap);
+        drawPieCountry(ipMap);
         // Thêm dữ liệu cho từng giờ
         filteredData.addAll(nlist);
         tableView.setItems(filteredData);
         //filteredData.clear();
+    }
+    public void MoreChart(){
+        DateBox.setVisible(false);
+        DateBox.setMouseTransparent(true);
+        CountryBox.setVisible(true);
+        CountryBox.setMouseTransparent(false);
+    }
+    public void TurnBack(){
+        CountryBox.setVisible(false);
+        CountryBox.setMouseTransparent(true);
+        DateBox.setVisible(true);
+        DateBox.setMouseTransparent(false);
     }
     public void setInforSearch(String nbegin,String nend,String beginT,String endT){
         LocalDate nBegin = LocalDate.parse(nbegin);
@@ -309,9 +331,6 @@ public class HomeController {
                     Tooltip.install(newNode, tooltip);
                 }
             });
-
-            System.out.println(curDate +": " + timeMap.getOrDefault(curDate,0));
-            System.out.println(currentDate); // In ngày theo định dạng dd-MM-yyyy
             currentDate = currentDate.plusDays(1); // Tăng ngày thêm 1 ngày
         }
 
@@ -321,7 +340,6 @@ public class HomeController {
                 String datePicked = item.getXValue();
                 setInforSearch(datePicked,datePicked,"","");
                 this.Search();
-                System.out.println("Filter by this colume: " + item.getXValue());
             });
         }
     }
@@ -333,6 +351,56 @@ public class HomeController {
                 pieChart.getData().add(slice); // Thêm phần tử vào PieChart
             }
         }
+    }
+    public void drawPieCountry(HashMap<String,Integer> ipMap){
+        BarCountry.getData().clear();
+        CategoryAxis xAxis = (CategoryAxis) BarCountry.getXAxis();
+        xAxis.getCategories().clear();
+        xAxis.setAutoRanging(false);
+        XYChart.Series<String, Number> series1 = new XYChart.Series<>();
+        pieCountry.getData().clear();
+        HashMap<String,Integer> nameCountry = new HashMap<>();
+        ipCountry s = new ipCountry();
+        int tSum = 0;
+        for (Map.Entry<String, Integer> entry : ipMap.entrySet()) {
+            String tmp = s.getNameCountry(entry.getKey());
+            tSum += entry.getValue();
+            nameCountry.merge(tmp,entry.getValue(),Integer::sum);
+        }
+        List<Map.Entry<String, Integer>> entryList = new ArrayList<>(nameCountry.entrySet());
+        // Sắp xếp List theo giá trị (descending)
+        entryList.sort((a, b) -> b.getValue().compareTo(a.getValue()));
+
+        // Lấy 5 phần tử có giá trị lớn nhất
+        int count = 0,sum = 0;
+        for (Map.Entry<String, Integer> entry : entryList) {
+            if (count < 5) {
+                PieChart.Data slice = new PieChart.Data(entry.getKey(),entry.getValue());
+                pieCountry.getData().add(slice); // Thêm phần tử vào PieChart
+                // BarChart by Country
+                xAxis.getCategories().add(entry.getKey());
+                int value = entry.getValue();
+                XYChart.Data<String, Number> data = new XYChart.Data<>(entry.getKey(), value);
+                series1.getData().add(data);
+
+                data.nodeProperty().addListener((obs, oldNode, newNode) -> {
+                    if (newNode != null) {
+                        Tooltip tooltip = new Tooltip("Country: " + entry.getKey() + "\nValue: " + value);
+                        Tooltip.install(newNode, tooltip);
+                    }
+                });
+                sum += entry.getValue();
+                count++;
+            } else {
+                break;
+            }
+        }
+//        xAxis.getCategories().add("Others");
+//        XYChart.Data<String, Number> data = new XYChart.Data<>("Others",tSum - sum);
+//        series1.getData().add(data);
+        PieChart.Data slice = new PieChart.Data("Others",tSum - sum);
+        pieCountry.getData().add(slice);
+        BarCountry.getData().add(series1);
     }
 
     public void switchChart(BarChart<String,Number> X,BarChart<String,Number> Y,BarChart<String,Number> Z){

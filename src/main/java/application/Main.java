@@ -1,10 +1,18 @@
 package application;
+import com.maxmind.geoip2.DatabaseReader;
+import com.maxmind.geoip2.model.CountryResponse;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import utils.ipCountry;
+import utils.ipCountry;
+import utils.searchEngine;
+
+import java.io.File;
+import java.net.InetAddress;
 import java.util.Objects;
 
 public class Main extends Application{
@@ -54,11 +62,11 @@ public class Main extends Application{
             System.out.println("Working Directory = " + System.getProperty("user.dir"));
             // Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/views/Apache_log.fxml")));
             Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/views/Home.fxml")));
-            Scene scene = new Scene(root,1280,800);
+            Scene scene = new Scene(root,1400,700);
             stage.setScene(scene);
             stage.setFullScreen(false);
-            stage.setWidth(1280);
-            stage.setHeight(800);
+            stage.setWidth(1400);
+            stage.setHeight(700);
             //stage.setResizable(false); // Không cho phép thay đổi kích thước cửa sổ
             stage.show();
         } catch(Exception e){
