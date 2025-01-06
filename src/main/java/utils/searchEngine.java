@@ -144,7 +144,7 @@ public class searchEngine implements Comparator<AccessLog> {
      */
     public ArrayList<LogEntry> searchByField(String field, String value) {
         ArrayList<LogEntry> results = new ArrayList<>(); // Danh sách kết quả
-        try (BufferedReader br = new BufferedReader(new FileReader("D:\\0.NewAnalyze\\Log_analyzer\\Modsec_Log\\src\\main\\resources\\modsec_logs.txt"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader("src/main/resources/data/modsec_logs.txt"))) {
             String line;
             StringBuilder currentBlock = new StringBuilder(); // Dùng để lưu block log hiện tại
 
@@ -152,7 +152,7 @@ public class searchEngine implements Comparator<AccessLog> {
                 // Nếu gặp dòng đánh dấu block log mới
                 if (line.startsWith("--") && line.endsWith("--")) {
                     // Phân tích block trước đó nếu có
-                    if (currentBlock.length() > 0) {
+                    if (!currentBlock.isEmpty()) {
                         LogEntry logEntry = parseLogEntry(currentBlock.toString());
                         if (logEntry != null && matchesField(logEntry, field, value)) {
                             results.add(logEntry);
@@ -164,7 +164,7 @@ public class searchEngine implements Comparator<AccessLog> {
             }
 
             // Phân tích block log cuối cùng
-            if (currentBlock.length() > 0) {
+            if (!currentBlock.isEmpty()) {
                 LogEntry logEntry = parseLogEntry(currentBlock.toString());
                 if (logEntry != null && matchesField(logEntry, field, value)) {
                     results.add(logEntry);
@@ -204,7 +204,7 @@ public class searchEngine implements Comparator<AccessLog> {
      */
     public int countRequestsInTimeRange(String startTime, String endTime) {
         int count = 0;
-        try (BufferedReader br = new BufferedReader(new FileReader("D:\\0.NewAnalyze\\Log_analyzer\\Modsec_Log\\src\\main\\resources\\modsec_logs.txt"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader("src/main/resources/data/modsec_logs.txt"))) {
             String line;
             StringBuilder currentBlock = new StringBuilder();
             Date startDate = dateFormat.parse(startTime); // Phân tích thời gian bắt đầu
@@ -212,7 +212,7 @@ public class searchEngine implements Comparator<AccessLog> {
 
             while ((line = br.readLine()) != null) {
                 if (line.startsWith("--") && line.endsWith("--")) {
-                    if (currentBlock.length() > 0) {
+                    if (!currentBlock.isEmpty()) {
                         LogEntry logEntry = parseLogEntry(currentBlock.toString());
                         if (logEntry != null && isInTimeRange(logEntry.getTimestamp(), startDate, endDate)) {
                             count++; // Tăng số đếm nếu log nằm trong khoảng thời gian
@@ -224,7 +224,7 @@ public class searchEngine implements Comparator<AccessLog> {
             }
 
             // Kiểm tra block cuối cùng
-            if (currentBlock.length() > 0) {
+            if (!currentBlock.isEmpty()) {
                 LogEntry logEntry = parseLogEntry(currentBlock.toString());
                 if (logEntry != null && isInTimeRange(logEntry.getTimestamp(), startDate, endDate)) {
                     count++; // Tăng số đếm nếu log nằm trong khoảng thời gian
@@ -266,7 +266,7 @@ public class searchEngine implements Comparator<AccessLog> {
             while ((line = br.readLine()) != null) {
                 // Khi gặp block mới, kiểm tra block trước đó
                 if (line.startsWith("--") && line.endsWith("--")) {
-                    if (currentBlock.length() > 0) {
+                    if (!currentBlock.isEmpty()) {
                         LogEntry logEntry = parseLogEntry(currentBlock.toString());
                         if (logEntry != null) {
                             count++; // Tăng biến đếm nếu có log hợp lệ
@@ -278,7 +278,7 @@ public class searchEngine implements Comparator<AccessLog> {
             }
 
             // Kiểm tra block cuối cùng
-            if (currentBlock.length() > 0) {
+            if (!currentBlock.isEmpty()) {
                 LogEntry logEntry = parseLogEntry(currentBlock.toString());
                 if (logEntry != null) {
                     count++; // Tăng biến đếm nếu có log hợp lệ
@@ -297,14 +297,14 @@ public class searchEngine implements Comparator<AccessLog> {
      */
     public Map<Integer, Integer> analyzeLoginsByHour(String date) {
         Map<Integer, Integer> hourlyLogins = new TreeMap<>(); // TreeMap để sắp xếp theo giờ
-        try (BufferedReader br = new BufferedReader(new FileReader("D:\\0.NewAnalyze\\Log_analyzer\\Modsec_Log\\src\\main\\resources\\modsec_logs.txt"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader("src/main/resources/data/modsec_logs.txt"))) {
             String line;
             StringBuilder currentBlock = new StringBuilder();
 
             while ((line = br.readLine()) != null) {
                 // Khi gặp block mới, kiểm tra block trước đó
                 if (line.startsWith("--") && line.endsWith("--")) {
-                    if (currentBlock.length() > 0) {
+                    if (!currentBlock.isEmpty()) {
                         LogEntry logEntry = parseLogEntry(currentBlock.toString());
                         if (logEntry != null && logEntry.getRequestUri().contains("login")) {
                             String timestamp = logEntry.getTimestamp();
@@ -320,7 +320,7 @@ public class searchEngine implements Comparator<AccessLog> {
             }
 
             // Xử lý block cuối cùng
-            if (currentBlock.length() > 0) {
+            if (!currentBlock.isEmpty()) {
                 LogEntry logEntry = parseLogEntry(currentBlock.toString());
                 if (logEntry != null && logEntry.getRequestUri().contains("login")) {
                     String timestamp = logEntry.getTimestamp();
@@ -367,7 +367,7 @@ public class searchEngine implements Comparator<AccessLog> {
             }
         }
 
-        String timestamp = logBlock.contains("[") ? logBlock.split("\\[")[1].split("\\]")[0] : "Unknown";
+        String timestamp = logBlock.contains("[") ? logBlock.split("\\[")[1].split("]")[0] : "Unknown";
         String requestUri = "Unknown";
         String userAgent = "Unknown";
         String message = "Unknown";
@@ -396,9 +396,7 @@ public class searchEngine implements Comparator<AccessLog> {
         return ipMap;
     }
 
-    public HashMap<String, Integer> getProto() {
-        return proto;
-    }
+
     public HashMap<String, Integer> getTimeMap() {
         return timeMap;
     }
@@ -408,14 +406,6 @@ public class searchEngine implements Comparator<AccessLog> {
     }
     public int getTotal() {
         return total;
-    }
-
-    public int getTotalFail() {
-        return totalFail;
-    }
-
-    public double getTotalSize() {
-        return totalSize;
     }
 
 
