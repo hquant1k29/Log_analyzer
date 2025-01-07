@@ -71,7 +71,8 @@ private boolean matchesCriteria(LogEntry logEntry, String pat, String beginDate,
                 logEntry.getMessage().contains(pat)   ||
                 logEntry.getId().contains(pat)        ||
                 logEntry.getClientIp().contains(pat)  ||
-                logEntry.getAction().contains(pat))) {
+                logEntry.getAction().contains(pat)    ||
+                logEntry.getStatus().contains(pat))) {
             return false;
         }
     }
@@ -162,6 +163,11 @@ private boolean matchesCriteria(LogEntry logEntry, String pat, String beginDate,
         }
     }
 
+    String status="";
+    String c =id + "-F--";
+    if(logBlock.contains((c))){
+         status = logBlock.split(c)[1].split("\n")[1].split(" ")[1];
+    }
 
 
     // User-Agent
@@ -174,7 +180,7 @@ private boolean matchesCriteria(LogEntry logEntry, String pat, String beginDate,
     String action = extractField(logBlock, "Action:");
 
     // Tạo và trả về đối tượng LogEntry
-    return new LogEntry(id, date, time, clientIp, requestUri, userAgent, message, action);
+    return new LogEntry(id, date, time, clientIp,status, requestUri, userAgent, message, action);
 }
 
     // Phương thức hỗ trợ để trích xuất giá trị từ log

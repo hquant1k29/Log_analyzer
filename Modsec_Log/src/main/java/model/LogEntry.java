@@ -7,17 +7,20 @@ public class LogEntry {
 
     private String time;
     private String clientIp;
+
+    private String status;
     private String requestUri;
     private String userAgent;
     private String message;
     private String action;
 
     // Constructor
-    public LogEntry(String id, String date, String time, String clientIp, String requestUri, String userAgent, String message, String action) {
+    public LogEntry(String id, String date, String time, String clientIp, String status, String requestUri, String userAgent, String message, String action) {
         this.id = id;
         this.date = date;
         this.time = time;
         this.clientIp = clientIp;
+        this.status = status;
         this.requestUri = requestUri;
         this.userAgent = userAgent;
         this.message = message;
@@ -46,6 +49,10 @@ public class LogEntry {
         return clientIp;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
     public String getRequestUri() {
         return requestUri;
     }
@@ -70,6 +77,7 @@ public class LogEntry {
                 ", date='" + date + '\'' +
                 ", time='" + time + '\'' +
                 ", clientIp='" + clientIp + '\'' +
+                ", status='" + status +'\'' +
                 ", requestUri='" + requestUri + '\'' +
                 ", userAgent='" + userAgent + '\'' +
                 ", message='" + message + '\'' +
