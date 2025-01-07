@@ -10,7 +10,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="Apache_Log" target="22" />
+      <module name="Apache_Log" target="19" />
     </bytecodeTargetLevel>
   </component>
 </project>
