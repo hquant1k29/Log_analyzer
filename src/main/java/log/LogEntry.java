@@ -2,18 +2,24 @@ package log;
 
 public class LogEntry {
     private String id;
-    private String timestamp;
+    private String date;
+
+    private String time;
     private String clientIp;
+
+    private String status;
     private String requestUri;
     private String userAgent;
     private String message;
     private String action;
 
     // Constructor
-    public LogEntry(String id, String timestamp, String clientIp, String requestUri, String userAgent, String message, String action) {
+    public LogEntry(String id, String date, String time, String clientIp, String status, String requestUri, String userAgent, String message, String action) {
         this.id = id;
-        this.timestamp = timestamp;
+        this.date = date;
+        this.time = time;
         this.clientIp = clientIp;
+        this.status = status;
         this.requestUri = requestUri;
         this.userAgent = userAgent;
         this.message = message;
@@ -25,12 +31,25 @@ public class LogEntry {
         return id;
     }
 
-    public String getTimestamp() {
-        return timestamp;
+
+//    public String getTimestamp() {
+//        return timestamp;
+//    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public String getTime() {
+        return time;
     }
 
     public String getClientIp() {
         return clientIp;
+    }
+
+    public String getStatus() {
+        return status;
     }
 
     public String getRequestUri() {
@@ -49,10 +68,19 @@ public class LogEntry {
         return action;
     }
 
-    @Override
+
     public String toString() {
-        return String.format("ID: %s | Timestamp: %s | Client IP: %s | Request URI: %s | User-Agent: %s | Message: %s | Action: %s",
-                id, timestamp, clientIp, requestUri, userAgent, message, action);
+        return "LogEntry{" +
+                "id='" + id + '\'' +
+                ", date='" + date + '\'' +
+                ", time='" + time + '\'' +
+                ", clientIp='" + clientIp + '\'' +
+                ", status='" + status +'\'' +
+                ", requestUri='" + requestUri + '\'' +
+                ", userAgent='" + userAgent + '\'' +
+                ", message='" + message + '\'' +
+                ", action='" + action + '\'' +
+                '}';
     }
 }
 

@@ -58,7 +58,7 @@ public class Main extends Application{
     @Override
     public void start(Stage stage) {
         try{
-            stage.setTitle("Apache Log");
+            stage.setTitle("Monitor Log");
             System.out.println("Working Directory = " + System.getProperty("user.dir"));
             // Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/views/Apache_log.fxml")));
             Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/views/Home.fxml")));

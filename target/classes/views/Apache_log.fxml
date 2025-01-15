@@ -11,125 +11,247 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="768.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ApacheController">
+<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.HomeController">
    <children>
-      <VBox layoutY="443.0" prefHeight="317.0" prefWidth="1287.0">
+      <VBox prefHeight="800.0" prefWidth="208.0" styleClass="head" stylesheets="@style.css">
          <children>
-            <TableView fx:id="tableView" prefHeight="396.0" prefWidth="1287.0">
-               <columns>
-                  <TableColumn fx:id="ipColumn" prefWidth="120.79995423555374" text="IP Address" />
-                  <TableColumn fx:id="logColumn" prefWidth="51.20001220703125" text="Log" />
-                  <TableColumn fx:id="userIDColumn" prefWidth="54.399993896484375" text="ID User" />
-                  <TableColumn fx:id="dateColumn" prefWidth="96.80006408691406" text="Date" />
-                  <TableColumn fx:id="timeColumn" prefWidth="99.2000732421875" text="Time" />
-                  <TableColumn fx:id="requestColumn" prefWidth="325.6000061035156" text="Request" />
-                  <TableColumn fx:id="statusColumn" minWidth="0.0" prefWidth="60.79998779296875" text="Status" />
-                  <TableColumn fx:id="sizeColumn" prefWidth="62.4000244140625" text="Size" />
-                  <TableColumn fx:id="refererColumn" prefWidth="208.7999267578125" text="Referer" />
-                  <TableColumn fx:id="userAgentColumn" prefWidth="200.79998779296875" text="User Agent" />
-               </columns>
-            </TableView>
+            <ImageView fitHeight="112.0" fitWidth="117.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@logo.png" />
+               </image>
+               <VBox.margin>
+                  <Insets left="50.0" top="30.0" />
+               </VBox.margin>
+            </ImageView>
+            <Label alignment="CENTER" prefHeight="26.0" prefWidth="214.0" text="Hust Monitor" textFill="WHITE">
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <Line endX="106.58576965332031" startX="-100.0" stroke="WHITE" strokeWidth="1.5">
+               <VBox.margin>
+                  <Insets top="20.0" />
+               </VBox.margin>
+            </Line>
+            <Button fx:id="IPTableButton" mnemonicParsing="false" onAction="#switchIPTable" prefHeight="43.0" prefWidth="233.0" styleClass="submit-button" stylesheets="@style.css" text="IPTable">
+               <VBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="100.0" />
+               </VBox.margin>
+               <font>
+                  <Font name="System Bold" size="16.0" />
+               </font>
+            </Button>
+            <Button fx:id="ModsecButton" mnemonicParsing="false" onAction="#switchModsecTable" prefHeight="43.0" prefWidth="226.0" styleClass="submit-button" stylesheets="@style.css" text="Modsec">
+               <VBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" />
+               </VBox.margin>
+               <font>
+                  <Font name="System Bold" size="16.0" />
+               </font>
+            </Button>
+            <Button fx:id="apacheButton" mnemonicParsing="false" onAction="#switchApache" prefHeight="43.0" prefWidth="230.0" styleClass="submit-button" stylesheets="@style.css" text="Apache">
+               <VBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" />
+               </VBox.margin>
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Button>
          </children>
       </VBox>
-      <TextField fx:id="searchField" layoutX="33.0" layoutY="401.0" promptText="Search" />
-      <Button layoutX="933.0" layoutY="401.0" mnemonicParsing="false" onAction="#Search" text="Search" />
-      <DatePicker fx:id="beginDate" layoutX="255.0" layoutY="401.0" prefHeight="26.0" prefWidth="116.0" />
-      <Label layoutX="212.0" layoutY="405.0" text="From" />
-      <Label layoutX="398.0" layoutY="405.0" text="To" />
-      <DatePicker fx:id="endDate" layoutX="424.0" layoutY="401.0" prefHeight="26.0" prefWidth="116.0" />
-      <HBox prefHeight="70.0" prefWidth="1287.0">
+      <StackPane prefHeight="800.0" prefWidth="1231.0">
          <children>
-            <Pane prefHeight="48.0" prefWidth="170.0" style="-fx-background-color: #ffffff;">
+            <AnchorPane fx:id="iptable" disable="true" opacity="0.0" prefHeight="200.0" prefWidth="200.0" />
+            <AnchorPane fx:id="modsec" prefHeight="200.0" prefWidth="200.0">
                <children>
-                  <Label layoutX="14.0" layoutY="2.0" text="Total Request:">
-                     <font>
-                        <Font name="System Bold" size="16.0" />
-                     </font>
-                  </Label>
-                  <Region prefHeight="49.0" prefWidth="9.0" style="-fx-background-color: #23395d;" />
-                  <Label fx:id="toRequest" layoutX="14.0" layoutY="21.0" prefHeight="29.0" prefWidth="143.0" text="Label" textFill="#23395d">
-                     <font>
-                        <Font size="16.0" />
-                     </font>
-                  </Label>
-               </children>
-               <HBox.margin>
-                  <Insets left="50.0" top="20.0" />
-               </HBox.margin>
-            </Pane>
-            <Pane prefHeight="70.0" prefWidth="170.0" style="-fx-background-color: #ffffff;">
-               <children>
-                  <Label layoutX="14.0" layoutY="2.0" text="Total Fail:">
-                     <font>
-                        <Font name="System Bold" size="16.0" />
-                     </font>
-                  </Label>
-                  <Region prefHeight="49.0" prefWidth="9.0" style="-fx-background-color: #23395d;" />
-                  <Label fx:id="toFail" layoutX="14.0" layoutY="22.0" prefHeight="29.0" prefWidth="143.0" text="Label" textFill="#23395d">
-                     <font>
-                        <Font size="16.0" />
-                     </font>
-                  </Label>
-               </children>
-               <HBox.margin>
-                  <Insets left="50.0" top="20.0" />
-               </HBox.margin>
-            </Pane>
-            <Pane prefHeight="70.0" prefWidth="170.0" style="-fx-background-color: #ffffff;">
-               <children>
-                  <Label layoutX="14.0" layoutY="2.0" text="Total Size:">
-                     <font>
-                        <Font name="System Bold" size="16.0" />
-                     </font>
-                  </Label>
-                  <Region prefHeight="49.0" prefWidth="9.0" style="-fx-background-color: #23395d;" />
-                  <Label fx:id="toSize" layoutX="14.0" layoutY="22.0" prefHeight="29.0" prefWidth="143.0" text="Label" textFill="#23395d">
-                     <font>
-                        <Font size="16.0" />
-                     </font>
-                  </Label>
-               </children>
-               <HBox.margin>
-                  <Insets left="50.0" top="20.0" />
-               </HBox.margin>
-            </Pane>
-         </children>
-      </HBox>
-      <StackPane layoutY="74.0" prefHeight="318.0" prefWidth="1287.0">
-         <children>
-            <HBox prefHeight="150.0" prefWidth="336.0">
-               <children>
-                  <BarChart fx:id="barChart" prefHeight="318.0" prefWidth="755.0">
+                  <BarChart fx:id="barChartMod" layoutX="27.0" layoutY="46.0" prefHeight="338.0" prefWidth="473.0">
                      <xAxis>
-                        <CategoryAxis side="BOTTOM" fx:id="xAxis" />
+                        <CategoryAxis side="BOTTOM" />
                      </xAxis>
                      <yAxis>
-                        <NumberAxis fx:id="yAxis" side="LEFT" />
+                        <NumberAxis side="LEFT" />
                      </yAxis>
-                     <HBox.margin>
-                        <Insets left="30.0" />
-                     </HBox.margin>
                   </BarChart>
-                  <PieChart fx:id="pieChart" prefHeight="318.0" prefWidth="333.0">
-                     <HBox.margin>
-                        <Insets left="50.0" />
-                     </HBox.margin>
-                  </PieChart>
+                  <TableView fx:id="logTable" layoutY="449.0" prefHeight="351.0" prefWidth="1231.0">
+                     <columns>
+                        <TableColumn fx:id="idColumn3" prefWidth="64.80003052949905" text="ID" />
+                        <TableColumn fx:id="dateColumn3" prefWidth="101.5999755859375" text="Date" />
+                        <TableColumn fx:id="timeColumn3" prefWidth="101.60005187988281" text="Time" />
+                        <TableColumn fx:id="ipColumn3" prefWidth="98.4000244140625" text="IP" />
+                        <TableColumn fx:id="statusColumn3" prefWidth="64.79998779296875" text="Status" />
+                        <TableColumn fx:id="requestUriColumn3" prefWidth="219.99993896484375" text="Request URI" />
+                        <TableColumn fx:id="userAgentColumn3" prefWidth="125.60003662109375" text="User-Agent" />
+                        <TableColumn fx:id="messageColumn3" prefWidth="328.7999267578125" text="Message" />
+                        <TableColumn fx:id="actionColumn3" minWidth="0.0" prefWidth="124.7999267578125" text="Action" />
+                     </columns>
+                  </TableView>
+                  <Label layoutX="27.0" layoutY="395.0" prefHeight="30.0" prefWidth="64.0" text="Keyword">
+                     <font>
+                        <Font name="System Bold" size="13.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="searchTextField3" layoutX="98.0" layoutY="397.0" prefHeight="30.0" prefWidth="170.0" />
+                  <Label layoutX="330.0" layoutY="395.0" prefHeight="30.0" prefWidth="54.0" text="From" />
+                  <DatePicker fx:id="fromDate3" layoutX="384.0" layoutY="395.0" prefHeight="30.0" prefWidth="155.0" />
+                  <Label layoutX="560.0" layoutY="395.0" prefHeight="30.0" prefWidth="54.0" text="To" />
+                  <DatePicker fx:id="toDate3" layoutX="600.0" layoutY="395.0" prefHeight="30.0" prefWidth="155.0" />
+                  <Button layoutX="780.0" layoutY="395.0" mnemonicParsing="false" onAction="#handleSearch" text="Search" />
+                  <PieChart fx:id="pieChartMod" layoutX="600.0" layoutY="24.0" prefHeight="358.0" prefWidth="500.0" />
+               </children></AnchorPane>
+            <AnchorPane fx:id="apache" prefHeight="800.0" prefWidth="1200.0">
+               <children>
+                  <VBox layoutY="443.0" prefHeight="357.0" prefWidth="1231.0">
+                     <children>
+                        <TableView fx:id="tableView" prefHeight="360.0" prefWidth="1231.0">
+                           <columns>
+                              <TableColumn fx:id="ipColumn" prefWidth="120.79995423555374" text="IP Address" />
+                              <TableColumn fx:id="logColumn" prefWidth="51.20001220703125" text="Log" />
+                              <TableColumn fx:id="userIDColumn" prefWidth="54.399993896484375" text="ID User" />
+                              <TableColumn fx:id="dateColumn" prefWidth="96.80006408691406" text="Date" />
+                              <TableColumn fx:id="timeColumn" prefWidth="99.2000732421875" text="Time" />
+                              <TableColumn fx:id="requestColumn" prefWidth="275.20001220703125" text="Request" />
+                              <TableColumn fx:id="statusColumn" minWidth="0.0" prefWidth="68.0" text="Status" />
+                              <TableColumn fx:id="sizeColumn" prefWidth="72.0" text="Size" />
+                              <TableColumn fx:id="refererColumn" prefWidth="186.39996337890625" text="Referer" />
+                              <TableColumn fx:id="userAgentColumn" prefWidth="203.20012207031255" text="User Agent" />
+                           </columns>
+                        </TableView>
+                     </children>
+                  </VBox>
+                  <TextField fx:id="searchField" layoutX="33.0" layoutY="401.0" promptText="Search" />
+                  <Button layoutX="933.0" layoutY="401.0" mnemonicParsing="false" onAction="#Search" text="Search" />
+                  <DatePicker fx:id="beginDate" layoutX="255.0" layoutY="401.0" prefHeight="26.0" prefWidth="116.0" />
+                  <Label layoutX="212.0" layoutY="405.0" text="From" />
+                  <Label layoutX="398.0" layoutY="405.0" text="To" />
+                  <DatePicker fx:id="endDate" layoutX="424.0" layoutY="401.0" prefHeight="26.0" prefWidth="116.0" />
+                  <HBox prefHeight="70.0" prefWidth="1231.0">
+                     <children>
+                        <Pane prefHeight="48.0" prefWidth="170.0" style="-fx-background-color: #ffffff;">
+                           <children>
+                              <Label layoutX="14.0" layoutY="2.0" text="Total Request:">
+                                 <font>
+                                    <Font name="System Bold" size="16.0" />
+                                 </font>
+                              </Label>
+                              <Region prefHeight="49.0" prefWidth="9.0" style="-fx-background-color: #23395d;" />
+                              <Label fx:id="toRequest" layoutX="14.0" layoutY="21.0" prefHeight="29.0" prefWidth="143.0" text="Label" textFill="#23395d">
+                                 <font>
+                                    <Font size="16.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                           <HBox.margin>
+                              <Insets left="50.0" top="20.0" />
+                           </HBox.margin>
+                        </Pane>
+                        <Pane prefHeight="70.0" prefWidth="170.0" style="-fx-background-color: #ffffff;">
+                           <children>
+                              <Label layoutX="14.0" layoutY="2.0" text="Total Fail:">
+                                 <font>
+                                    <Font name="System Bold" size="16.0" />
+                                 </font>
+                              </Label>
+                              <Region prefHeight="49.0" prefWidth="9.0" style="-fx-background-color: #23395d;" />
+                              <Label fx:id="toFail" layoutX="14.0" layoutY="22.0" prefHeight="29.0" prefWidth="143.0" text="Label" textFill="#23395d">
+                                 <font>
+                                    <Font size="16.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                           <HBox.margin>
+                              <Insets left="50.0" top="20.0" />
+                           </HBox.margin>
+                        </Pane>
+                     </children>
+                  </HBox>
+                  <StackPane layoutY="74.0" prefHeight="318.0" prefWidth="1231.0">
+                     <children>
+                        <HBox fx:id="DateBox" prefHeight="150.0" prefWidth="336.0">
+                           <children>
+                              <StackPane prefHeight="318.0" prefWidth="862.0">
+                                 <children>
+                                    <BarChart fx:id="DateChart" prefHeight="318.0" prefWidth="840.0">
+                                       <xAxis>
+                                          <CategoryAxis side="BOTTOM" fx:id="xAxis" />
+                                       </xAxis>
+                                       <yAxis>
+                                          <NumberAxis fx:id="yAxis" side="LEFT" />
+                                       </yAxis>
+                                    </BarChart>
+                                    <BarChart fx:id="TimeChart" layoutX="10.0" layoutY="10.0" prefHeight="318.0" prefWidth="840.0">
+                                       <xAxis>
+                                          <CategoryAxis side="BOTTOM" fx:id="xAxis1" />
+                                       </xAxis>
+                                       <yAxis>
+                                          <NumberAxis fx:id="yAxis1" side="LEFT" />
+                                       </yAxis>
+                                    </BarChart>
+                                    <BarChart fx:id="TimeDetailChart" layoutX="10.0" layoutY="10.0" prefHeight="318.0" prefWidth="840.0">
+                                       <xAxis>
+                                          <CategoryAxis side="BOTTOM" fx:id="xAxis11" />
+                                       </xAxis>
+                                       <yAxis>
+                                          <NumberAxis fx:id="yAxis11" side="LEFT" />
+                                       </yAxis>
+                                    </BarChart>
+                                 </children>
+                              </StackPane>
+                              <PieChart fx:id="pieChart" prefHeight="318.0" prefWidth="333.0">
+                                 <HBox.margin>
+                                    <Insets left="50.0" />
+                                 </HBox.margin>
+                              </PieChart>
+                              <Button mnemonicParsing="false" onAction="#MoreChart" prefHeight="26.0" prefWidth="96.0" text="More" />
+                           </children>
+                           <StackPane.margin>
+                              <Insets right="20.0" />
+                           </StackPane.margin>
+                        </HBox>
+                        <HBox fx:id="CountryBox" layoutX="10.0" layoutY="10.0" prefHeight="150.0" prefWidth="336.0">
+                           <children>
+                              <BarChart fx:id="BarCountry" prefHeight="318.0" prefWidth="721.0">
+                                 <xAxis>
+                                    <CategoryAxis side="BOTTOM" />
+                                 </xAxis>
+                                 <yAxis>
+                                    <NumberAxis side="LEFT" />
+                                 </yAxis>
+                              </BarChart>
+                              <PieChart fx:id="pieCountry" prefHeight="318.0" prefWidth="402.0">
+                                 <HBox.margin>
+                                    <Insets left="50.0" />
+                                 </HBox.margin>
+                              </PieChart>
+                              <Button mnemonicParsing="false" onAction="#TurnBack" prefHeight="26.0" prefWidth="96.0" text="Back">
+                                 <HBox.margin>
+                                    <Insets right="20.0" />
+                                 </HBox.margin>
+                              </Button>
+                           </children>
+                        </HBox>
+                     </children>
+                  </StackPane>
+                  <TextField fx:id="beginTime" layoutX="677.0" layoutY="401.0" prefHeight="26.0" prefWidth="91.0" promptText="HH:MM" />
+                  <TextField fx:id="endTime" layoutX="831.0" layoutY="401.0" prefHeight="26.0" prefWidth="91.0" promptText="HH:MM" />
+                  <Label layoutX="607.0" layoutY="405.0" prefHeight="18.0" prefWidth="91.0" text="Time from" />
+                  <Label layoutX="775.0" layoutY="405.0" prefHeight="18.0" prefWidth="53.0" text="Time to" />
                </children>
-            </HBox>
+            </AnchorPane>
          </children>
       </StackPane>
-      <TextField fx:id="beginTime" layoutX="677.0" layoutY="401.0" prefHeight="26.0" prefWidth="91.0" promptText="HH:MM" />
-      <TextField fx:id="endTime" layoutX="831.0" layoutY="401.0" prefHeight="26.0" prefWidth="91.0" promptText="HH:MM" />
-      <Label layoutX="607.0" layoutY="405.0" prefHeight="18.0" prefWidth="91.0" text="Time from" />
-      <Label layoutX="775.0" layoutY="405.0" prefHeight="18.0" prefWidth="53.0" text="Time to" />
    </children>
-</AnchorPane>
+</HBox>

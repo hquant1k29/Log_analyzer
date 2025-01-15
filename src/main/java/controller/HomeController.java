@@ -1,11 +1,14 @@
 package controller;
 
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.fxml.FXML;
+import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.chart.*;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.util.StringConverter;
 import utils.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -16,6 +19,23 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.net.URL;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.scene.chart.*;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import utils.IptablesLogProcessor;
+import utils.LogAnalyzer;
+import log.IptablesModel;
+import utils.FileUtils;
+
+import java.sql.Date;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class HomeController {
     @FXML
@@ -84,7 +104,69 @@ public class HomeController {
     private BarChart<String, Number> TimeChart;
     @FXML
     private BarChart<String, Number> TimeDetailChart;
+    @FXML
+    private TextField searchTextField3;  // TextField for the search keyword
+    @FXML
+    private DatePicker fromDate3;  // DatePicker for the start date
+    @FXML
+    private DatePicker toDate3;  // DatePicker for the end date
+    @FXML
+    private TableView<LogEntry> logTable;  // TreeTableView for displaying search results
+    @FXML
+    private TableColumn<LogEntry, String> idColumn3, dateColumn3, timeColumn3, ipColumn3, statusColumn3, requestUriColumn3, userAgentColumn3, messageColumn3, actionColumn3;
+    @FXML
+    private BarChart<String, Number> barChartMod;
+    @FXML
+    private PieChart pieChartMod;
+    // attribute of Iptable
+    @FXML
+    private Label totalRequestLabelIPT;
+    @FXML
+    private Label totalFailLabelIPT;
+    @FXML
+    private Label totalSizeLabelIPT;
+    @FXML
+    private PieChart requestPieChartIPT;
+    @FXML
+    private BarChart<String, Number> logBarChartIPT;
 
+    // Table columns
+    @FXML
+    private TableView<IptablesModel> logTableIP;
+    @FXML
+    private TableColumn<IptablesModel, String> prefixColumnIPT;
+    @FXML
+    private TableColumn<IptablesModel, String> sourceIPColumnIPT;
+    @FXML
+    private TableColumn<IptablesModel, String> destinationIPColumnIPT;
+    @FXML
+    private TableColumn<IptablesModel, Number> sourcePortColumnIPT;
+    @FXML
+    private TableColumn<IptablesModel, Number> destinationPortColumnIPT;
+    @FXML
+    private TableColumn<IptablesModel, String> protocolColumnIPT;
+    @FXML
+    private TableColumn<IptablesModel, Number> lengthColumnIPT;
+    @FXML
+    private TableColumn<IptablesModel, String> inInterfaceColumnIPT;
+    @FXML
+    private TableColumn<IptablesModel, String> outInterfaceColumnIPT;
+    @FXML
+    private TableColumn<IptablesModel, String> macColumnIPT;
+    @FXML
+    private TableColumn<IptablesModel, String> timestampColumnIPT; // hiển thị LocalDateTime as String
+
+    // Filter controls
+    @FXML
+    private DatePicker fromDatePickerIPT;
+    @FXML
+    private DatePicker toDatePickerIPT;
+    @FXML
+    private TextField searchFieldIPT;
+
+    private ObservableList<IptablesModel> masterData = FXCollections.observableArrayList();
+
+    private final searchEngine searchEngine = new searchEngine();
 
     public void initialize() {
         iptable.setVisible(true);
@@ -93,7 +175,8 @@ public class HomeController {
         modsec.setMouseTransparent(true);
         apache.setVisible(false);
         apache.setMouseTransparent(true);
-
+        //initialize1();
+        initialize2();
         ipColumn.setCellValueFactory(new PropertyValueFactory<>("ip"));
         logColumn.setCellValueFactory(new PropertyValueFactory<>("log"));
         userIDColumn.setCellValueFactory(new PropertyValueFactory<>("userID"));
@@ -142,6 +225,31 @@ public class HomeController {
         ModsecButton.setStyle("-fx-background-color: #576aca;");
         IPTableButton.setStyle("-fx-background-color: #576aca;");
     }
+
+    public void switchIPTable(){
+        iptable.setVisible(true);
+        iptable.setMouseTransparent(false);
+        modsec.setVisible(false);
+        modsec.setMouseTransparent(true);
+        apache.setVisible(false);
+        apache.setMouseTransparent(true);
+        IPTableButton.setStyle("-fx-background-color: #404a93;");
+        ModsecButton.setStyle("-fx-background-color: #576aca;");
+        apacheButton.setStyle("-fx-background-color: #576aca;");
+    }
+
+    public void switchModsecTable(){
+        iptable.setVisible(false);
+        iptable.setMouseTransparent(true);
+        modsec.setVisible(true);
+        modsec.setMouseTransparent(false);
+        apache.setVisible(false);
+        apache.setMouseTransparent(true);
+        ModsecButton.setStyle("-fx-background-color: #404a93;");
+        IPTableButton.setStyle("-fx-background-color: #576aca;");
+        apacheButton.setStyle("-fx-background-color: #576aca;");
+    }
+
     public void Search(){
         String nbegin = "",nend = "";
         String beginT = beginTime.getText();
@@ -190,7 +298,11 @@ public class HomeController {
         drawPieChart(statusMap);
         drawPieCountry(ipMap);
         // Thêm dữ liệu cho từng giờ
-        filteredData.addAll(nlist);
+        filteredData.clear();
+        for(int i = 0; i <= 200; i++){
+            filteredData.add(nlist.get(i));
+        }
+        //filteredData.addAll(nlist);
         tableView.setItems(filteredData);
         //filteredData.clear();
     }
@@ -413,8 +525,259 @@ public class HomeController {
     }
 
     // IPTable Controller
+    public void initialize2() {
+        // Đọc file + parse
+        List<String> rawLogs = FileUtils.readLogFile("src/main/resources/data/mergeok.txt");
+        List<IptablesModel> parsedLogs = IptablesLogProcessor.parseLogs(rawLogs);
 
+        masterData.addAll(parsedLogs);
+
+        // Setup columns
+        prefixColumnIPT.setCellValueFactory(new PropertyValueFactory<>("logPrefix"));
+        sourceIPColumnIPT.setCellValueFactory(new PropertyValueFactory<>("sourceIP"));
+        destinationIPColumnIPT.setCellValueFactory(new PropertyValueFactory<>("destinationIP"));
+        sourcePortColumnIPT.setCellValueFactory(new PropertyValueFactory<>("sourcePort"));
+        destinationPortColumnIPT.setCellValueFactory(new PropertyValueFactory<>("destinationPort"));
+        protocolColumnIPT.setCellValueFactory(new PropertyValueFactory<>("protocol"));
+        lengthColumnIPT.setCellValueFactory(new PropertyValueFactory<>("length"));
+        inInterfaceColumnIPT.setCellValueFactory(new PropertyValueFactory<>("inInterface"));
+        outInterfaceColumnIPT.setCellValueFactory(new PropertyValueFactory<>("outInterface"));
+        macColumnIPT.setCellValueFactory(new PropertyValueFactory<>("macAddress"));
+        // timestampColumn: LocalDateTime => string
+        timestampColumnIPT.setCellValueFactory(cellData -> {
+            if (cellData.getValue().getTimestamp() != null) {
+                return new ReadOnlyObjectWrapper<>(
+                        cellData.getValue().getTimestamp().toString()
+                );
+            } else {
+                return new ReadOnlyObjectWrapper<>("null");
+            }
+        });
+
+        logTableIP.setItems(masterData);
+
+        // Cập nhật
+        updateStatistics(masterData);
+    }
+
+    @FXML
+    public void onSearchClickedIPT() {
+        // Lấy from, to
+        LocalDate fromLocal = fromDatePickerIPT.getValue();
+        LocalDate toLocal = toDatePickerIPT.getValue();
+        // Chuyển sang Date
+        Date fromDate = (fromLocal != null) ? Date.valueOf(fromLocal) : null;
+        Date toDate = (toLocal != null) ? Date.valueOf(toLocal) : null;
+
+        String search = searchField.getText().trim().toLowerCase();
+
+        // Filter
+        List<IptablesModel> filtered = masterData.stream()
+                .filter(e -> {
+                    // 1) search
+                    if (!search.isEmpty()) {
+                        boolean match = false;
+                        if (e.getLogPrefix() != null && e.getLogPrefix().toLowerCase().contains(search)) match = true;
+                        if (!match && e.getSourceIP() != null && e.getSourceIP().toLowerCase().contains(search)) match = true;
+                        if (!match && e.getProtocol() != null && e.getProtocol().toLowerCase().contains(search)) match = true;
+                        // v.v. => destinationIP, in/outInterface
+                        if (!match) return false;
+                    }
+                    // 2) time range
+                    if (e.getTimestamp() != null) {
+                        // convert to Date
+                        java.util.Date d = java.util.Date.from(
+                                e.getTimestamp().atZone(java.time.ZoneId.systemDefault()).toInstant()
+                        );
+                        if (fromDate != null && d.before(fromDate)) {
+                            return false;
+                        }
+                        if (toDate != null && d.after(toDate)) {
+                            return false;
+                        }
+                    }
+                    return true;
+                })
+                .collect(Collectors.toList());
+
+        ObservableList<IptablesModel> filteredList = FXCollections.observableArrayList(filtered);
+        logTableIP.setItems(filteredList);
+
+        // Cập nhật chart
+        updateStatistics(filteredList);
+    }
+
+    private void updateStatistics(List<IptablesModel> data) {
+        int totalReq = LogAnalyzer.calculateTotalRequests(data);
+        int blocked  = LogAnalyzer.calculateBlockedRequests(data);
+        long size    = LogAnalyzer.calculateThroughput(data);
+
+        totalRequestLabelIPT.setText(String.valueOf(totalReq));
+        totalFailLabelIPT.setText(String.valueOf(blocked));
+        totalSizeLabelIPT.setText(size + " bytes");
+
+        updatePieChart(data);
+        updateBarChart(data);
+    }
+
+    private void updatePieChart(List<IptablesModel> data) {
+        long droppedCount = data.stream()
+                .filter(e -> e.getLogPrefix() != null && e.getLogPrefix().toLowerCase().contains("dropped"))
+                .count();
+        long acceptCount = data.stream()
+                .filter(e -> e.getLogPrefix() != null && e.getLogPrefix().toLowerCase().contains("accept"))
+                .count();
+
+
+        ObservableList<PieChart.Data> pieData = FXCollections.observableArrayList(
+                new PieChart.Data("Dropped", droppedCount),
+                new PieChart.Data("Accept", acceptCount)
+
+        );
+        requestPieChartIPT.setData(pieData);
+    }
+
+    private void updateBarChart(List<IptablesModel> data) {
+        logBarChartIPT.getData().clear();
+        Map<String, Long> prefixCount = data.stream()
+                .filter(e -> {
+                    String p = e.getLogPrefix();
+                    return p != null && !p.toLowerCase().contains("message repeated");
+                })
+                .collect(Collectors.groupingBy(
+                        IptablesModel::getLogPrefix,
+                        Collectors.counting()
+                ));
+
+        XYChart.Series<String, Number> series = new XYChart.Series<>();
+        series.setName("Log Prefix Stats");
+
+        for (var entry : prefixCount.entrySet()) {
+            String prefix = entry.getKey();
+            long count = entry.getValue();
+            // cắt bớt if needed
+            if (prefix.length() > 20) {
+                prefix = prefix.substring(0, 20) + "...";
+            }
+            series.getData().add(new XYChart.Data<>(prefix, count));
+        }
+
+        logBarChartIPT.getData().add(series);
+        // fix text xoay
+        CategoryAxis xAxis = (CategoryAxis) logBarChartIPT.getXAxis();
+        xAxis.setTickLabelRotation(0);
+    }
 
     // ModsecController
+    @FXML
+    public void initialize1() {
+        // Cài đặt các cột TreeTableView
+        idColumn3.setCellValueFactory(new PropertyValueFactory<>("id"));
+        dateColumn3.setCellValueFactory(new PropertyValueFactory<>("date"));
+        timeColumn3.setCellValueFactory(new PropertyValueFactory<>("time"));
+        ipColumn3.setCellValueFactory(new PropertyValueFactory<>("clientIp"));
+        statusColumn3.setCellValueFactory(new PropertyValueFactory<>("status"));
+        requestUriColumn3.setCellValueFactory(new PropertyValueFactory<>("requestUri"));
+        userAgentColumn3.setCellValueFactory(new PropertyValueFactory<>("userAgent"));
+        messageColumn3.setCellValueFactory(new PropertyValueFactory<>("message"));
+        actionColumn3.setCellValueFactory(new PropertyValueFactory<>("action"));
+
+        // Thiết lập StringConverter cho DatePicker
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.ENGLISH);
+
+        // DatePicker fromDate
+        fromDate3.setConverter(new StringConverter<LocalDate>() {
+            @Override
+            public String toString(LocalDate date) {
+                return (date != null) ? date.format(dateFormatter) : "";  // Hiển thị dd/MM/yyyy
+            }
+
+            @Override
+            public LocalDate fromString(String string) {
+                return (string != null && !string.isEmpty())
+                        ? LocalDate.parse(string, dateFormatter)
+                        : null;  // Chuyển đổi chuỗi thành LocalDate
+            }
+        });
+
+        // DatePicker toDate
+        toDate3.setConverter(new StringConverter<LocalDate>() {
+            @Override
+            public String toString(LocalDate date) {
+                return (date != null) ? date.format(dateFormatter) : "";  // Hiển thị dd/MM/yyyy
+            }
+
+            @Override
+            public LocalDate fromString(String string) {
+                return (string != null && !string.isEmpty())
+                        ? LocalDate.parse(string, dateFormatter)
+                        : null;  // Chuyển đổi chuỗi thành LocalDate
+            }
+        });
+    }
+
+    @FXML
+    private void handleSearch() {
+        String keyword = searchTextField3.getText();
+        LocalDate from = fromDate3.getValue();  // Lấy giá trị từ DatePicker (LocalDate)
+        LocalDate to = toDate3.getValue();      // Lấy giá trị từ DatePicker (LocalDate)
+
+        // Nếu từ ngày và đến ngày không null, chuyển đổi chúng thành định dạng phù hợp
+        String fromFormatted = from != null ? from.format(DateTimeFormatter.ofPattern("dd/MMM/yyyy", Locale.ENGLISH)) : "";
+        String toFormatted = to != null ? to.format(DateTimeFormatter.ofPattern("dd/MMM/yyyy", Locale.ENGLISH)) : "";
+
+        // Tìm kiếm với các tham số đã lấy
+        ArrayList<LogEntry> results = searchEngine.SearchModsec(keyword, fromFormatted, toFormatted, "", "");
+        ObservableList<LogEntry> filteredData = FXCollections.observableArrayList();
+        // Đưa dữ liệu vào TreeTableView
+        TreeItem<LogEntry> root = new TreeItem<>();
+        for (LogEntry entry : results) {
+            root.getChildren().add(new TreeItem<>(entry));
+        }
+        filteredData.clear();
+//        for(int i = 0; i <= 2; i++){
+//            filteredData.add(results.get(i));
+//        }
+        filteredData.addAll(results);
+        logTable.setItems(filteredData);
+
+        // Cập nhật biểu đồ
+        updateCharts(results);
+    }
+
+    private void updateCharts(ArrayList<LogEntry> results) {
+        // Cập nhật PieChart
+        pieChartMod.getData().clear();
+        long successCount = results.stream().filter(e -> "200".equals(e.getStatus())).count();
+        long failCount = results.size() - successCount;
+
+        pieChartMod.getData().addAll(
+                new PieChart.Data("Success", successCount),
+                new PieChart.Data("Fail", failCount)
+        );
+
+        // Cập nhật BarChart
+        barChartMod.getData().clear();
+
+        // Sử dụng TreeMap để tự động sắp xếp theo ngày
+        var dataMap = new TreeMap<LocalDate, Long>();
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+        for (LogEntry entry : results) {
+            LocalDate date = LocalDate.parse(entry.getDate(), dateFormatter);
+            dataMap.put(date, dataMap.getOrDefault(date, 0L) + 1);
+        }
+
+        // Tạo series mới
+        var series = new javafx.scene.chart.XYChart.Series<String, Number>();
+        for (var entry : dataMap.entrySet()) {
+            String formattedDate = entry.getKey().format(dateFormatter); // Chuyển ngày lại thành chuỗi để hiển thị
+            series.getData().add(new javafx.scene.chart.XYChart.Data<>(formattedDate, entry.getValue()));
+        }
+
+        // Thêm series vào BarChart
+        barChartMod.getData().add(series);
+
+    }
 
 }

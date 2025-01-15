@@ -8,8 +8,6 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.MenuButton?>
-<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
@@ -24,8 +22,12 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
+<!-- Gộp thành 1 file, dùng duy nhất controller="controller.HomeController" -->
+
 <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.HomeController">
+
    <children>
+      <!-- Thanh menu bên trái -->
       <VBox prefHeight="800.0" prefWidth="208.0" styleClass="head" stylesheets="@style.css">
          <children>
             <ImageView fitHeight="112.0" fitWidth="117.0" pickOnBounds="true" preserveRatio="true">
@@ -36,6 +38,7 @@
                   <Insets left="50.0" top="30.0" />
                </VBox.margin>
             </ImageView>
+
             <Label alignment="CENTER" prefHeight="26.0" prefWidth="214.0" text="Hust Monitor" textFill="WHITE">
                <VBox.margin>
                   <Insets />
@@ -44,12 +47,14 @@
                   <Font name="System Bold" size="18.0" />
                </font>
             </Label>
+
             <Line endX="106.58576965332031" startX="-100.0" stroke="WHITE" strokeWidth="1.5">
                <VBox.margin>
                   <Insets top="20.0" />
                </VBox.margin>
             </Line>
-            <Button fx:id="IPTableButton" mnemonicParsing="false" prefHeight="43.0" prefWidth="233.0" styleClass="submit-button" stylesheets="@style.css" text="IPTable">
+
+            <Button fx:id="IPTableButton" mnemonicParsing="false" onAction="#switchIPTable" prefHeight="43.0" prefWidth="233.0" styleClass="submit-button" stylesheets="@style.css" text="IPTable">
                <VBox.margin>
                   <Insets bottom="10.0" left="10.0" right="10.0" top="100.0" />
                </VBox.margin>
@@ -57,7 +62,8 @@
                   <Font name="System Bold" size="16.0" />
                </font>
             </Button>
-            <Button fx:id="ModsecButton" mnemonicParsing="false" prefHeight="43.0" prefWidth="226.0" styleClass="submit-button" stylesheets="@style.css" text="Modsec">
+
+            <Button fx:id="ModsecButton" mnemonicParsing="false" onAction="#switchModsecTable" prefHeight="43.0" prefWidth="226.0" styleClass="submit-button" stylesheets="@style.css" text="Modsec">
                <VBox.margin>
                   <Insets bottom="10.0" left="10.0" right="10.0" />
                </VBox.margin>
@@ -65,6 +71,7 @@
                   <Font name="System Bold" size="16.0" />
                </font>
             </Button>
+
             <Button fx:id="apacheButton" mnemonicParsing="false" onAction="#switchApache" prefHeight="43.0" prefWidth="230.0" styleClass="submit-button" stylesheets="@style.css" text="Apache">
                <VBox.margin>
                   <Insets bottom="10.0" left="10.0" right="10.0" />
@@ -75,49 +82,158 @@
             </Button>
          </children>
       </VBox>
+
+      <!-- StackPane bên phải: chứa nhiều AnchorPane (iptable, modsec, apache) -->
       <StackPane prefHeight="800.0" prefWidth="1231.0">
          <children>
-            <AnchorPane fx:id="iptable" opacity="0.0" prefHeight="200.0" prefWidth="200.0" />
+
+            <!-- IPTable Pane (trước empty, nay gộp code từ file thứ hai) -->
+            <AnchorPane fx:id="iptable" prefHeight="200.0" prefWidth="200.0">
+
+               <!-- Thay root <VBox> (file thứ 2) thành 1 <VBox> con bên trong iptable -->
+               <VBox alignment="TOP_CENTER" layoutX="0.0" layoutY="0.0" prefHeight="801.0" prefWidth="1231.0" spacing="10" style="-fx-background-color: #f0f0f0;">
+
+                  <padding>
+                     <Insets bottom="10" left="10" right="10" top="10" />
+                  </padding>
+
+                  <!-- Row 1: 3 stats -->
+                  <HBox alignment="CENTER" spacing="40">
+                     <VBox alignment="CENTER">
+                        <Label style="-fx-font-weight: bold;" text="Total Requests:" />
+                        <Label fx:id="totalRequestLabelIPT" text="0" />
+                     </VBox>
+                     <VBox alignment="CENTER">
+                        <Label style="-fx-font-weight: bold;" text="Total Dropped:" />
+                        <Label fx:id="totalFailLabelIPT" text="0" />
+                     </VBox>
+                     <VBox alignment="CENTER">
+                        <Label style="-fx-font-weight: bold;" text="Total Size:" />
+                        <Label fx:id="totalSizeLabelIPT" text="0 bytes" />
+                     </VBox>
+                  </HBox>
+
+                  <!-- Row 2: PieChart + BarChart -->
+                  <HBox alignment="CENTER" prefHeight="355.0" prefWidth="1210.0" spacing="20">
+                     <PieChart fx:id="requestPieChartIPT" prefHeight="415.0" prefWidth="386.0" />
+                     <BarChart fx:id="logBarChartIPT" prefHeight="415.0" prefWidth="713.0">
+                        <xAxis>
+                           <CategoryAxis label="Category" />
+                        </xAxis>
+                        <yAxis>
+                           <NumberAxis label="Count" />
+                        </yAxis>
+                     </BarChart>
+                  </HBox>
+
+                  <!-- Row 3: Filter UI -->
+                  <HBox alignment="CENTER" spacing="10">
+                     <Label text="From:" />
+                     <DatePicker fx:id="fromDatePickerIPT" />
+                     <Label text="To:" />
+                     <DatePicker fx:id="toDatePickerIPT" />
+
+                     <TextField fx:id="searchFieldIPT" promptText="Search IP or Protocol" />
+                     <Button onAction="#onSearchClickedIPT" text="Search" />
+                     <VBox.margin>
+                        <Insets top="20.0" />
+                     </VBox.margin>
+                  </HBox>
+
+                  <!-- Row 4: Table -->
+                  <TableView fx:id="logTableIP" prefHeight="342.0" prefWidth="1210.0">
+                     <columns>
+                        <TableColumn fx:id="timestampColumnIPT" prefWidth="150" text="Timestamp" />
+                        <TableColumn fx:id="prefixColumnIPT" prefWidth="140" text="Prefix" />
+                        <TableColumn fx:id="sourceIPColumnIPT" prefWidth="120" text="Source IP" />
+                        <TableColumn fx:id="destinationIPColumnIPT" prefWidth="120" text="Dest IP" />
+                        <TableColumn fx:id="protocolColumnIPT" prefWidth="80" text="Protocol" />
+                        <TableColumn fx:id="sourcePortColumnIPT" prefWidth="70" text="Src Port" />
+                        <TableColumn fx:id="destinationPortColumnIPT" prefWidth="70" text="Dst Port" />
+                        <TableColumn fx:id="inInterfaceColumnIPT" prefWidth="52.79986572265625" text="In" />
+                        <TableColumn fx:id="outInterfaceColumnIPT" prefWidth="81.60009765625" text="Out" />
+                        <TableColumn fx:id="macColumnIPT" prefWidth="232.00006103515625" text="MAC" />
+                        <TableColumn fx:id="lengthColumnIPT" prefWidth="92.7999267578125" text="Length" />
+                     </columns>
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                  </TableView>
+               </VBox>
+            </AnchorPane>
+
+            <!-- modsec Pane -->
             <AnchorPane fx:id="modsec" prefHeight="200.0" prefWidth="200.0">
                <children>
-                  <TableView layoutY="449.0" prefHeight="351.0" prefWidth="1231.0">
-                    <columns>
-                      <TableColumn prefWidth="75.0" text="ID" />
-                      <TableColumn prefWidth="121.60000610351562" text="Timestamp" />
-                        <TableColumn prefWidth="116.80000305175781" text="Client IP" />
-                        <TableColumn prefWidth="375.20001220703125" text="Request URI" />
-                        <TableColumn prefWidth="137.59991455078125" text="User-Agent" />
-                        <TableColumn prefWidth="224.79998779296875" text="Message" />
-                        <TableColumn minWidth="0.0" prefWidth="185.5999755859375" text="Action" />
-                    </columns>
+                  <!-- (giữ nguyên nội dung cũ) -->
+                  <BarChart fx:id="barChartMod" layoutX="27.0" layoutY="46.0" prefHeight="338.0" prefWidth="473.0">
+                     <xAxis>
+                        <CategoryAxis side="BOTTOM" />
+                     </xAxis>
+                     <yAxis>
+                        <NumberAxis side="LEFT" />
+                     </yAxis>
+                  </BarChart>
+
+                  <TableView fx:id="logTable" layoutY="449.0" prefHeight="351.0" prefWidth="1231.0">
+                     <columns>
+                        <TableColumn fx:id="idColumn3" prefWidth="64.8" text="ID" />
+                        <TableColumn fx:id="dateColumn3" prefWidth="101.6" text="Date" />
+                        <TableColumn fx:id="timeColumn3" prefWidth="101.6" text="Time" />
+                        <TableColumn fx:id="ipColumn3" prefWidth="98.4" text="IP" />
+                        <TableColumn fx:id="statusColumn3" prefWidth="64.8" text="Status" />
+                        <TableColumn fx:id="requestUriColumn3" prefWidth="219.9" text="Request URI" />
+                        <TableColumn fx:id="userAgentColumn3" prefWidth="125.6" text="User-Agent" />
+                        <TableColumn fx:id="messageColumn3" prefWidth="328.8" text="Message" />
+                        <TableColumn fx:id="actionColumn3" prefWidth="124.8" text="Action" />
+                     </columns>
                   </TableView>
-               </children></AnchorPane>
-            <AnchorPane fx:id="apache" disable="true" opacity="0.0" prefHeight="800.0" prefWidth="1200.0">
+
+                  <Label layoutX="27.0" layoutY="395.0" prefHeight="30.0" prefWidth="64.0" text="Keyword">
+                     <font>
+                        <Font name="System Bold" size="13.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="searchTextField3" layoutX="98.0" layoutY="397.0" prefHeight="30.0" prefWidth="170.0" />
+                  <Label layoutX="330.0" layoutY="395.0" prefHeight="30.0" prefWidth="54.0" text="From" />
+                  <DatePicker fx:id="fromDate3" layoutX="384.0" layoutY="395.0" prefHeight="30.0" prefWidth="155.0" />
+                  <Label layoutX="560.0" layoutY="395.0" prefHeight="30.0" prefWidth="54.0" text="To" />
+                  <DatePicker fx:id="toDate3" layoutX="600.0" layoutY="395.0" prefHeight="30.0" prefWidth="155.0" />
+                  <Button layoutX="780.0" layoutY="395.0" mnemonicParsing="false" onAction="#handleSearch" text="Search" />
+                  <PieChart fx:id="pieChartMod" layoutX="600.0" layoutY="24.0" prefHeight="358.0" prefWidth="500.0" />
+               </children>
+            </AnchorPane>
+
+            <!-- apache Pane -->
+            <AnchorPane fx:id="apache" prefHeight="800.0" prefWidth="1200.0">
                <children>
+                  <!-- (giữ nguyên nội dung cũ) -->
                   <VBox layoutY="443.0" prefHeight="357.0" prefWidth="1231.0">
                      <children>
                         <TableView fx:id="tableView" prefHeight="360.0" prefWidth="1231.0">
                            <columns>
-                              <TableColumn fx:id="ipColumn" prefWidth="120.79995423555374" text="IP Address" />
-                              <TableColumn fx:id="logColumn" prefWidth="51.20001220703125" text="Log" />
-                              <TableColumn fx:id="userIDColumn" prefWidth="54.399993896484375" text="ID User" />
-                              <TableColumn fx:id="dateColumn" prefWidth="96.80006408691406" text="Date" />
-                              <TableColumn fx:id="timeColumn" prefWidth="99.2000732421875" text="Time" />
-                              <TableColumn fx:id="requestColumn" prefWidth="275.20001220703125" text="Request" />
-                              <TableColumn fx:id="statusColumn" minWidth="0.0" prefWidth="68.0" text="Status" />
+                              <TableColumn fx:id="ipColumn" prefWidth="120.8" text="IP Address" />
+                              <TableColumn fx:id="logColumn" prefWidth="51.2" text="Log" />
+                              <TableColumn fx:id="userIDColumn" prefWidth="54.4" text="ID User" />
+                              <TableColumn fx:id="dateColumn" prefWidth="96.8" text="Date" />
+                              <TableColumn fx:id="timeColumn" prefWidth="99.2" text="Time" />
+                              <TableColumn fx:id="requestColumn" prefWidth="275.2" text="Request" />
+                              <TableColumn fx:id="statusColumn" prefWidth="68.0" text="Status" />
                               <TableColumn fx:id="sizeColumn" prefWidth="72.0" text="Size" />
-                              <TableColumn fx:id="refererColumn" prefWidth="186.39996337890625" text="Referer" />
-                              <TableColumn fx:id="userAgentColumn" prefWidth="203.20012207031255" text="User Agent" />
+                              <TableColumn fx:id="refererColumn" prefWidth="186.4" text="Referer" />
+                              <TableColumn fx:id="userAgentColumn" prefWidth="203.2" text="User Agent" />
                            </columns>
                         </TableView>
                      </children>
                   </VBox>
+
                   <TextField fx:id="searchField" layoutX="33.0" layoutY="401.0" promptText="Search" />
                   <Button layoutX="933.0" layoutY="401.0" mnemonicParsing="false" onAction="#Search" text="Search" />
                   <DatePicker fx:id="beginDate" layoutX="255.0" layoutY="401.0" prefHeight="26.0" prefWidth="116.0" />
                   <Label layoutX="212.0" layoutY="405.0" text="From" />
                   <Label layoutX="398.0" layoutY="405.0" text="To" />
                   <DatePicker fx:id="endDate" layoutX="424.0" layoutY="401.0" prefHeight="26.0" prefWidth="116.0" />
+
                   <HBox prefHeight="70.0" prefWidth="1231.0">
                      <children>
                         <Pane prefHeight="48.0" prefWidth="170.0" style="-fx-background-color: #ffffff;">
@@ -158,6 +274,7 @@
                         </Pane>
                      </children>
                   </HBox>
+
                   <StackPane layoutY="74.0" prefHeight="318.0" prefWidth="1231.0">
                      <children>
                         <HBox fx:id="DateBox" prefHeight="150.0" prefWidth="336.0">
@@ -172,7 +289,7 @@
                                           <NumberAxis fx:id="yAxis" side="LEFT" />
                                        </yAxis>
                                     </BarChart>
-                                    <BarChart fx:id="TimeChart" layoutX="10.0" layoutY="10.0" prefHeight="318.0" prefWidth="840.0">
+                                    <BarChart fx:id="TimeChart" prefHeight="318.0" prefWidth="840.0">
                                        <xAxis>
                                           <CategoryAxis side="BOTTOM" fx:id="xAxis1" />
                                        </xAxis>
@@ -180,7 +297,7 @@
                                           <NumberAxis fx:id="yAxis1" side="LEFT" />
                                        </yAxis>
                                     </BarChart>
-                                    <BarChart fx:id="TimeDetailChart" layoutX="10.0" layoutY="10.0" prefHeight="318.0" prefWidth="840.0">
+                                    <BarChart fx:id="TimeDetailChart" prefHeight="318.0" prefWidth="840.0">
                                        <xAxis>
                                           <CategoryAxis side="BOTTOM" fx:id="xAxis11" />
                                        </xAxis>
@@ -201,7 +318,8 @@
                               <Insets right="20.0" />
                            </StackPane.margin>
                         </HBox>
-                        <HBox fx:id="CountryBox" layoutX="10.0" layoutY="10.0" prefHeight="150.0" prefWidth="336.0">
+
+                        <HBox fx:id="CountryBox" prefHeight="150.0" prefWidth="336.0">
                            <children>
                               <BarChart fx:id="BarCountry" prefHeight="318.0" prefWidth="721.0">
                                  <xAxis>
@@ -225,17 +343,11 @@
                         </HBox>
                      </children>
                   </StackPane>
+
                   <TextField fx:id="beginTime" layoutX="677.0" layoutY="401.0" prefHeight="26.0" prefWidth="91.0" promptText="HH:MM" />
                   <TextField fx:id="endTime" layoutX="831.0" layoutY="401.0" prefHeight="26.0" prefWidth="91.0" promptText="HH:MM" />
                   <Label layoutX="607.0" layoutY="405.0" prefHeight="18.0" prefWidth="91.0" text="Time from" />
                   <Label layoutX="775.0" layoutY="405.0" prefHeight="18.0" prefWidth="53.0" text="Time to" />
-                  <MenuButton layoutX="41.0" layoutY="401.0" mnemonicParsing="false" text="Field">
-                    <items>
-                      <MenuItem mnemonicParsing="false" text="Action 1" />
-                      <MenuItem mnemonicParsing="false" text="Action 2" />
-                        <MenuItem mnemonicParsing="false" text="Unspecified Action" />
-                    </items>
-                  </MenuButton>
                </children>
             </AnchorPane>
          </children>
