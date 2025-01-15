@@ -1,6 +1,6 @@
 package log;
 
-import models.IptablesModel;
+import log.IptablesModel;
 import utils.TimeUtils;
 
 import java.time.LocalDateTime;

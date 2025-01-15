@@ -9,7 +9,7 @@ public class MainApp extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("Iptables Log Analyzer");
-        primaryStage.setScene(new Scene(FXMLLoader.load(getClass().getResource("/MainView.fxml"))));
+        primaryStage.setScene(new Scene(FXMLLoader.load(getClass().getResource("views/MainView.fxml"))));
         primaryStage.show();
     }
 

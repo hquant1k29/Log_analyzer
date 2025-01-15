@@ -1,6 +1,6 @@
 package utils;
 
-import models.IptablesModel;
+import log.IptablesModel;
 import java.io.*;
 import java.nio.file.*;
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package models;
+package log;
 
 import java.time.LocalDateTime;
 

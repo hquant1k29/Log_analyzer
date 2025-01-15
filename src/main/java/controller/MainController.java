@@ -9,7 +9,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import log.IptablesLogProcessor;
 import log.LogAnalyzer;
-import models.IptablesModel;
+import log.IptablesModel;
 import utils.FileUtils;
 
 import java.sql.Date;
@@ -50,7 +50,7 @@ public class MainController {
     @FXML
     public void initialize() {
         // Đọc file + parse
-        List<String> rawLogs = FileUtils.readLogFile("src/main/resources/mergeok.txt");
+        List<String> rawLogs = FileUtils.readLogFile("data/mergeok.txt");
         List<IptablesModel> parsedLogs = IptablesLogProcessor.parseLogs(rawLogs);
 
         masterData.addAll(parsedLogs);
