@@ -1,4 +1,3 @@
-
 package utils;
 
 import model.LogEntry;
@@ -6,27 +5,13 @@ import model.LogEntry;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-//import java.time.LocalDateTime;
-//import java.time.ZoneOffset;
-//import java.time.format.DateTimeFormatter;
 import java.time.LocalDate;
-import java.util.*;
-//import java.util.regex.Pattern;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
-//import java.time.format.TextStyle;
+import java.util.ArrayList;
 import java.util.Locale;
 
 public class SearchEngine {
-//    private int total = 0;
-//    private int totalFail = 0;
-//    private int tmpSize = 0;
-//    private double totalSize = 0;
-//    private HashMap<String, Integer> timeMap;
-//    private HashMap<String, Integer> ipMap;
-//    private HashMap<String, Integer> proto;
-//    private int[] statusMap;
-
     public SearchEngine() {
 
     }
@@ -69,66 +54,10 @@ public class SearchEngine {
         return results;
     }
 
-//    private boolean matchesCriteria(LogEntry logEntry, String pat, String beginDate, String endDate, String beginTime, String endTime) {
-//        // Kiểm tra từ khóa trong các trường của logEntry
-//        if (pat != null && !pat.isEmpty()) {
-//            if (!(logEntry.getRequestUri().contains(pat) ||
-//                    logEntry.getUserAgent().contains(pat) ||
-//                    logEntry.getMessage().contains(pat) ||
-//                    logEntry.getId().contains(pat) ||
-//                    logEntry.getClientIp().contains(pat) ||
-//                    logEntry.getAction().contains(pat) ||
-//                    logEntry.getStatus().contains(pat))) {
-//                return false;
-//            }
-//        }
-//
-//        // Kiểm tra ngày
-//        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MMM/yyyy", Locale.ENGLISH);
-//        LocalDate logDate = LocalDate.parse(beginDate, dateFormatter); // Chuyển đổi ngày log thành LocalDate
-//
-//        // Kiểm tra ngày bắt đầu
-//        if (beginDate != null && !beginDate.isEmpty()) {
-//            LocalDate begin = LocalDate.parse(beginDate, dateFormatter);
-//            if (logDate.isBefore(begin)) {
-//                return false;
-//            }
-//        }
-//
-//        // Kiểm tra ngày kết thúc
-//        if (endDate != null && !endDate.isEmpty()) {
-//            LocalDate end = LocalDate.parse(endDate, dateFormatter);
-//            if (logDate.isAfter(end)) {
-//                return false;
-//            }
-//        }
-//
-//        // Kiểm tra thời gian
-//        if (beginTime != null && !beginTime.isEmpty()) {
-//            if (logEntry.getTime().compareTo(beginTime) < 0) {
-//                return false;
-//            }
-//        }
-//
-//        if (endTime != null && !endTime.isEmpty()) {
-//            if (logEntry.getTime().compareTo(endTime) > 0) {
-//                return false;
-//            }
-//        }
-//
-//        return true;
-//    }
-
     private boolean matchesCriteria(LogEntry logEntry, String pat, String begin, String end, String beginTime, String endTime) {
         if (pat != null && !pat.isEmpty()) {
             // Kiểm tra từ khóa có xuất hiện trong một số trường của logEntry không
-            if (!(logEntry.getRequestUri().contains(pat) ||
-                    logEntry.getUserAgent().contains(pat) ||
-                    logEntry.getMessage().contains(pat) ||
-                    logEntry.getId().contains(pat) ||
-                    logEntry.getClientIp().contains(pat) ||
-                    logEntry.getAction().contains(pat) ||
-                    logEntry.getStatus().contains(pat))) {
+            if (!(logEntry.getRequestUri().contains(pat) || logEntry.getUserAgent().contains(pat) || logEntry.getMessage().contains(pat) || logEntry.getId().contains(pat) || logEntry.getClientIp().contains(pat) || logEntry.getAction().contains(pat) || logEntry.getStatus().contains(pat))) {
                 return false;
             }
         }
@@ -139,7 +68,7 @@ public class SearchEngine {
         } else {
             LocalDate beginDate = LocalDate.parse(begin, inputFormatter);
             LocalDate endDate = LocalDate.parse(end, inputFormatter);
-            LocalDate logDate = LocalDate.parse(logEntry.getDate(),outputFormatter);
+            LocalDate logDate = LocalDate.parse(logEntry.getDate(), outputFormatter);
             if (!beginDate.toString().isEmpty()) {
                 if (logDate.isBefore(beginDate)) {
                     return false;
@@ -272,84 +201,6 @@ public class SearchEngine {
         // Tạo và trả về đối tượng LogEntry
         return new LogEntry(id, date, time, clientIp, status, requestUri, userAgent, message, action);
     }
-//    private LogEntry parseLogEntry(String logBlock) {
-//        if (logBlock == null || logBlock.isEmpty()) {
-//            return null; // Trả về null nếu block log trống
-//        }
-//
-//        String[] lines = logBlock.split("\n");
-//
-//        // ID và Client IP
-//        String id = "Unknown";
-//        String clientIp = "Unknown";
-//        if (lines.length >= 1) {
-//            String[] idParts = lines[0].split("-");
-//            if (idParts.length >= 3) {
-//                id = idParts[2].trim();
-//            }
-//        }
-//        if (lines.length >= 2) {
-//            String[] parts = lines[1].split(" ");
-//            if (parts.length >= 4) {
-//                clientIp = parts[3].trim();
-//            }
-//        }
-//
-//        // Timestamp
-//        String date = "Unknown";
-//        String time = "Unknown";
-//        if (logBlock.contains("[")) {
-//            try {
-//                String timestamp = logBlock.split("\\[")[1].split("\\]")[0];
-//                String[] timestampParts = timestamp.split(":", 2);
-//                date = timestampParts[0];
-//                // time = timestampParts.length > 1 ? timestampParts[1] : "";
-//                if(timestampParts.length>1){
-//                    String []timepart = timestampParts[1].split(" ",2);
-//                    if(timepart.length>1){
-//                        time = timepart[0];
-//                    }
-//                    else{
-//                        time = "";
-//                    }
-//                }
-//                else{
-//                    time = "";
-//                }
-//            } catch (Exception e) {
-//                // Xử lý lỗi nếu timestamp không hợp lệ
-//            }
-//        }
-//
-//        // Request URI
-//        String requestUri = "";
-//        String []URIpart= {"GET ","POST ","PUT ","DELETE ","HEAD ","OPTIONS "};
-//        for(int i = 0 ; i<URIpart.length;i++){
-//            if (logBlock.contains(URIpart[i])) {
-//                String field = URIpart[i];
-//                requestUri = logBlock.split(field)[1].split("\n",2)[0];
-//            }
-//        }
-//
-//        String status="";
-//        String c =id + "-F--";
-//        if(logBlock.contains((c))){
-//            status = logBlock.split(c)[1].split("\n")[1].split(" ")[1];
-//        }
-//
-//
-//        // User-Agent
-//        String userAgent = extractField(logBlock, "User-Agent:");
-//
-//        // Message
-//        String message = extractField(logBlock, "Message:");
-//
-//        // Action
-//        String action = extractField(logBlock, "Action:");
-//
-//        // Tạo và trả về đối tượng LogEntry
-//        return new LogEntry(id, date, time, clientIp,status, requestUri, userAgent, message, action);
-//    }
 
     // Phương thức hỗ trợ để trích xuất giá trị từ log
     private String extractField(String logBlock, String field) {
@@ -362,6 +213,4 @@ public class SearchEngine {
         }
         return "Unknown";
     }
-
-
 }
