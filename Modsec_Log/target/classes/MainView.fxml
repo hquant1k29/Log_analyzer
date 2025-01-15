@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="554.0" prefWidth="761.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ModsecController">
+    <children>
+        <!-- TreeTableView để hiển thị kết quả tìm kiếm -->
+        <TreeTableView layoutX="-2.0" layoutY="306.0" prefHeight="247.0" prefWidth="761.0" fx:id="logTreeTable">
+            <columns>
+                <TreeTableColumn prefWidth="59.0" text="ID" fx:id="idColumn" />
+                <TreeTableColumn prefWidth="78.0" text="Date" fx:id="dateColumn" />
+                <TreeTableColumn prefWidth="88.0" text="Time" fx:id="timeColumn" />
+                <TreeTableColumn prefWidth="75.0" text="IP" fx:id="ipColumn" />
+                <TreeTableColumn prefWidth="50.0" text="Status" fx:id="statusColumn" />
+                <TreeTableColumn prefWidth="100.0" text="RequestUri" fx:id="requestUriColumn" />
+                <TreeTableColumn prefWidth="99.0" text="UserAgent" fx:id="userAgentColumn" />
+                <TreeTableColumn prefWidth="158.0" text="Message" fx:id="messageColumn" />
+                <TreeTableColumn prefWidth="51.0" text="Action" fx:id="actionColumn" />
+            </columns>
+        </TreeTableView>
+
+        <!-- Các trường nhập dữ liệu -->
+        <TextField layoutX="69.0" layoutY="281.0" prefHeight="25.0" prefWidth="118.0" fx:id="searchTextField"/>
+        <Label layoutX="4.0" layoutY="285.0" prefHeight="17.0" prefWidth="53.0" text="KeyWord"/>
+        <DatePicker layoutX="225.0" layoutY="281.0" prefHeight="25.0" prefWidth="124.0" fx:id="fromDate"/>
+        <DatePicker layoutX="391.0" layoutY="281.0" prefHeight="25.0" prefWidth="124.0" fx:id="toDate"/>
+        <Label layoutX="190.0" layoutY="285.0" prefHeight="17.0" prefWidth="35.0" text="From"/>
+        <Label layoutX="365.0" layoutY="285.0" text="To"/>
+
+        <!-- Button Search để kích hoạt tìm kiếm -->
+        <Button layoutX="520.0" layoutY="281.0" prefHeight="25.0" prefWidth="80.0" text="Search" onAction="#handleSearch"/>
+
+        <!-- Biểu đồ BarChart -->
+        <BarChart fx:id="barChart" layoutX="50" layoutY="50" prefHeight="214.0" prefWidth="359.0">
+            <xAxis>
+                <CategoryAxis side="BOTTOM"/>
+            </xAxis>
+            <yAxis>
+                <NumberAxis side="LEFT"/>
+            </yAxis>
+        </BarChart>
+
+        <!-- Biểu đồ PieChart -->
+        <PieChart fx:id="pieChart" layoutX="440.0" layoutY="29.0" prefHeight="150.0" prefWidth="298.0"/>
+    </children>
+</AnchorPane>
