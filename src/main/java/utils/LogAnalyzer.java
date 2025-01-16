@@ -1,6 +1,6 @@
 package utils;
-import log.IptablesModel;
-import utils.TimeUtils;
+import log.IPtableLog;
+
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -9,18 +9,18 @@ public class LogAnalyzer {
     /**
      * Tính tổng số request (số dòng log) trong danh sách.
      */
-    public static int calculateTotalRequests(List<IptablesModel> logEntries) {
+    public static int calculateTotalRequests(List<IPtableLog> logEntries) {
         return (logEntries == null) ? 0 : logEntries.size();
     }
 
     /**
      * Tính tổng 'length' của tất cả gói tin (nếu null thì coi như 0).
      */
-    public static long calculateThroughput(List<IptablesModel> logEntries) {
+    public static long calculateThroughput(List<IPtableLog> logEntries) {
         long total = 0;
         if (logEntries == null) return 0;
 
-        for (IptablesModel entry : logEntries) {
+        for (IPtableLog entry : logEntries) {
             if (entry.getLength() != null) {
                 total += entry.getLength();
             }
@@ -33,7 +33,7 @@ public class LogAnalyzer {
      * Ở iptables log, ta có thể dựa vào prefix "Dropped..." để coi là chặn.
      * Prefix chứa "Dropped" => blocked.
      */
-    public static int calculateBlockedRequests(List<IptablesModel> logEntries) {
+    public static int calculateBlockedRequests(List<IPtableLog> logEntries) {
         if (logEntries == null) return 0;
         return (int) logEntries.stream()
                 .filter(e -> {
@@ -47,11 +47,11 @@ public class LogAnalyzer {
      * Tính số lượng request trong khoảng thời gian [startTime, endTime].
      * Chú ý chuyển LocalDateTime -> Date để xài TimeUtils.isWithinTimeRange
      */
-    public static int calculateRequestsInTimeRange(List<IptablesModel> logEntries, Date startTime, Date endTime) {
+    public static int calculateRequestsInTimeRange(List<IPtableLog> logEntries, Date startTime, Date endTime) {
         if (logEntries == null || startTime == null || endTime == null) return 0;
 
         int count = 0;
-        for (IptablesModel entry : logEntries) {
+        for (IPtableLog entry : logEntries) {
             LocalDateTime ldt = entry.getTimestamp();
             if (ldt == null) continue;
 

@@ -1,6 +1,6 @@
 package log;
 
-public class LogEntry {
+public class ModsecLog {
     private String id;
     private String date;
 
@@ -14,7 +14,7 @@ public class LogEntry {
     private String action;
 
     // Constructor
-    public LogEntry(String id, String date, String time, String clientIp, String status, String requestUri, String userAgent, String message, String action) {
+    public ModsecLog(String id, String date, String time, String clientIp, String status, String requestUri, String userAgent, String message, String action) {
         this.id = id;
         this.date = date;
         this.time = time;

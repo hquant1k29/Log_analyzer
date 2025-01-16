@@ -1,5 +1,5 @@
 package utils;
-import log.IptablesModel;
+import log.IPtableLog;
 import java.io.*;
 import java.nio.file.*;
 import java.util.ArrayList;
@@ -61,12 +61,12 @@ public class FileUtils {
      * @param filePath Đường dẫn đến file log
      * @return Danh sách LogEntry đã parse thành công (nếu dòng nào parse lỗi, có thể bỏ qua hoặc trả về null)
      */
-    public static List<IptablesModel> readLogEntries(String filePath) {
+    public static List<IPtableLog> readLogEntries(String filePath) {
         List<String> lines = readLogFile(filePath);  // Đọc từng dòng dạng text
-        List<IptablesModel> entries = new ArrayList<>();
+        List<IPtableLog> entries = new ArrayList<>();
 
         for (String line : lines) {
-            IptablesModel entry = parseIptablesLogLine(line);
+            IPtableLog entry = parseIptablesLogLine(line);
             if (entry != null) {
                 entries.add(entry);
             }
@@ -79,7 +79,7 @@ public class FileUtils {
      * Log ví dụ:
      * 2025-01-15T14:08:55.800240+07:00 phong-VirtualBox kernel: Dropped UDP: IN=enp0s3 OUT= MAC=... SRC=192.168.20.79 DST=255.255.255.255 ...
      */
-    private static IptablesModel parseIptablesLogLine(String line) {
+    private static IPtableLog parseIptablesLogLine(String line) {
         try {
             // Bước 1: Tách timestamp (ISO8601) ở đầu, hostName, 'kernel:' và phần còn lại
             // Giả sử format:
@@ -145,7 +145,7 @@ public class FileUtils {
             String[] tokens = fields.split("\\s+");
 
             // Tạo LogEntry
-            IptablesModel logEntry = new IptablesModel();
+            IPtableLog logEntry = new IPtableLog();
             logEntry.setTimestamp(dateTime);
             logEntry.setLogPrefix(prefix);  // "Dropped UDP" hoặc "Accept SSH", v.v.
 

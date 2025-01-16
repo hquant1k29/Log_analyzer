@@ -1,6 +1,5 @@
 package utils;
-import log.IptablesModel;
-import utils.TimeUtils;
+import log.IPtableLog;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -14,8 +13,8 @@ public class IptablesLogProcessor {
      * @param rawLogs Danh sách log thô.
      * @return Danh sách LogEntry đã được phân tích.
      */
-    public static List<IptablesModel> parseLogs(List<String> rawLogs) {
-        List<IptablesModel> logEntries = new ArrayList<>();
+    public static List<IPtableLog> parseLogs(List<String> rawLogs) {
+        List<IPtableLog> logEntries = new ArrayList<>();
 
         for (String line : rawLogs) {
             try {
@@ -54,7 +53,7 @@ public class IptablesLogProcessor {
                         : "";
 
                 // 3) Tạo LogEntry
-                IptablesModel entry = new IptablesModel();
+                IPtableLog entry = new IPtableLog();
                 entry.setTimestamp(dateTime);      // LocalDateTime
                 entry.setLogPrefix(prefix);        // "Dropped UDP", "Accept SSH", v.v.
 
@@ -141,15 +140,15 @@ public class IptablesLogProcessor {
      * @param searchTerm Từ khóa tìm
      * @return Danh sách LogEntry khớp
      */
-    public static List<IptablesModel> searchLogs(List<IptablesModel> logEntries, String searchTerm) {
-        List<IptablesModel> results = new ArrayList<>();
+    public static List<IPtableLog> searchLogs(List<IPtableLog> logEntries, String searchTerm) {
+        List<IPtableLog> results = new ArrayList<>();
         if (searchTerm == null || searchTerm.isEmpty()) {
             return results; // hoặc trả luôn logEntries nếu muốn
         }
 
         String lowerSearch = searchTerm.toLowerCase();
 
-        for (IptablesModel entry : logEntries) {
+        for (IPtableLog entry : logEntries) {
             boolean match = false;
 
             if (entry.getLogPrefix() != null
@@ -189,14 +188,14 @@ public class IptablesLogProcessor {
      * Lọc log theo khoảng thời gian (startTime, endTime) - đều là Date.
      * Nhưng LogEntry.timestamp là LocalDateTime => chuyển đổi để so sánh.
      */
-    public static List<IptablesModel> filterLogsByTime(List<IptablesModel> logEntries, Date startTime, Date endTime) {
-        List<IptablesModel> results = new ArrayList<>();
+    public static List<IPtableLog> filterLogsByTime(List<IPtableLog> logEntries, Date startTime, Date endTime) {
+        List<IPtableLog> results = new ArrayList<>();
         if (startTime == null || endTime == null) {
             // Tuỳ nhu cầu, có thể trả về rỗng hoặc trả về toàn bộ
             return results;
         }
 
-        for (IptablesModel entry : logEntries) {
+        for (IPtableLog entry : logEntries) {
             if (entry.getTimestamp() == null) {
                 continue;
             }

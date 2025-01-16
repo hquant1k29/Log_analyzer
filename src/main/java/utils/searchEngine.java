@@ -3,18 +3,15 @@ import log.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import log.LogEntry;
+import log.ModsecLog;
 import java.time.LocalDate;
 import java.time.Month;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -44,7 +41,7 @@ public class searchEngine implements Comparator<AccessLog> {
         System.out.println("Working Directory = " + System.getProperty("user.dir"));
         //String fileName = "src/main/resources/data/apache_logs.txt";
         String fileName = "/var/log/apache2/access.log";
-        // String fileName = "Apache_Log/src/main/resources/data/access1.txt";
+        //String fileName = "Apache_Log/src/main/resources/data/access1.txt";
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             String line;
             stringCompare s = new stringCompare();
@@ -151,8 +148,8 @@ public class searchEngine implements Comparator<AccessLog> {
         return 0;
     }
 
-    public ArrayList<LogEntry> SearchModsec(String pat, String beginDate, String endDate, String beginTime, String endTime) {
-        ArrayList<LogEntry> results = new ArrayList<>();
+    public ArrayList<ModsecLog> SearchModsec(String pat, String beginDate, String endDate, String beginTime, String endTime) {
+        ArrayList<ModsecLog> results = new ArrayList<>();
         int count = 0;
         totalFailMoc = 0;
         try (BufferedReader br = new BufferedReader(new FileReader("src/main/resources/data/modsec_logs.txt"))) {
@@ -163,12 +160,12 @@ public class searchEngine implements Comparator<AccessLog> {
                 if (line.startsWith("--") && line.contains("-A--")) {
                     // Nếu đã có block log trước đó, phân tích và kiểm tra
                     if (!currentBlock.isEmpty()) {
-                        LogEntry logEntry = parseLogEntry(currentBlock.toString());
-                        if (logEntry != null && matchesCriteria(logEntry, pat, beginDate, endDate, beginTime, endTime)) {
+                        ModsecLog modsecLog = parseLogEntry(currentBlock.toString());
+                        if (modsecLog != null && matchesCriteria(modsecLog, pat, beginDate, endDate, beginTime, endTime)) {
 
-                            results.add(logEntry);
+                            results.add(modsecLog);
                             count++;
-                            if(Integer.parseInt(logEntry.getStatus()) >= 400){
+                            if(Integer.parseInt(modsecLog.getStatus()) >= 400){
                                 totalFailMoc ++;
                             }
                         }
@@ -180,9 +177,9 @@ public class searchEngine implements Comparator<AccessLog> {
 
             // Xử lý block cuối cùng
             if (!currentBlock.isEmpty()) {
-                LogEntry logEntry = parseLogEntry(currentBlock.toString());
-                if (logEntry != null && matchesCriteria(logEntry, pat, beginDate, endDate, beginTime, endTime)) {
-                    results.add(logEntry);
+                ModsecLog modsecLog = parseLogEntry(currentBlock.toString());
+                if (modsecLog != null && matchesCriteria(modsecLog, pat, beginDate, endDate, beginTime, endTime)) {
+                    results.add(modsecLog);
                     count++;
                     totalFailMoc++;
                 }
@@ -195,10 +192,10 @@ public class searchEngine implements Comparator<AccessLog> {
         return results;
     }
 
-    private boolean matchesCriteria(LogEntry logEntry, String pat, String begin, String end, String beginTime, String endTime) {
+    private boolean matchesCriteria(ModsecLog modsecLog, String pat, String begin, String end, String beginTime, String endTime) {
         if (pat != null && !pat.isEmpty()) {
             // Kiểm tra từ khóa có xuất hiện trong một số trường của logEntry không
-            if (!(logEntry.getRequestUri().contains(pat) || logEntry.getUserAgent().contains(pat) || logEntry.getMessage().contains(pat) || logEntry.getId().contains(pat) || logEntry.getClientIp().contains(pat) || logEntry.getAction().contains(pat) || logEntry.getStatus().contains(pat))) {
+            if (!(modsecLog.getRequestUri().contains(pat) || modsecLog.getUserAgent().contains(pat) || modsecLog.getMessage().contains(pat) || modsecLog.getId().contains(pat) || modsecLog.getClientIp().contains(pat) || modsecLog.getAction().contains(pat) || modsecLog.getStatus().contains(pat))) {
                 return false;
             }
         }
@@ -209,7 +206,7 @@ public class searchEngine implements Comparator<AccessLog> {
         } else {
             LocalDate beginDate = LocalDate.parse(begin, inputFormatter);
             LocalDate endDate = LocalDate.parse(end, inputFormatter);
-            LocalDate logDate = LocalDate.parse(logEntry.getDate(), outputFormatter);
+            LocalDate logDate = LocalDate.parse(modsecLog.getDate(), outputFormatter);
             if (!beginDate.toString().isEmpty()) {
                 if (logDate.isBefore(beginDate)) {
                     return false;
@@ -225,13 +222,13 @@ public class searchEngine implements Comparator<AccessLog> {
 
 
         if (beginTime != null && !beginTime.isEmpty()) {
-            if (logEntry.getTime().compareTo(beginTime) < 0) {
+            if (modsecLog.getTime().compareTo(beginTime) < 0) {
                 return false;
             }
         }
 
         if (endTime != null && !endTime.isEmpty()) {
-            if (logEntry.getTime().compareTo(endTime) > 0) {
+            if (modsecLog.getTime().compareTo(endTime) > 0) {
                 return false;
             }
         }
@@ -240,7 +237,7 @@ public class searchEngine implements Comparator<AccessLog> {
     }
 
 
-    private LogEntry parseLogEntry(String logBlock) {
+    private ModsecLog parseLogEntry(String logBlock) {
         if (logBlock == null || logBlock.isEmpty()) {
             return null; // Trả về null nếu block log trống
         }
@@ -340,7 +337,7 @@ public class searchEngine implements Comparator<AccessLog> {
         String action = extractField(logBlock, "Action:");
 
         // Tạo và trả về đối tượng LogEntry
-        return new LogEntry(id, date, time, clientIp, status, requestUri, userAgent, message, action);
+        return new ModsecLog(id, date, time, clientIp, status, requestUri, userAgent, message, action);
     }
 
     // Phương thức hỗ trợ để trích xuất giá trị từ log

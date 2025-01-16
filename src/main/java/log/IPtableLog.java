@@ -2,7 +2,7 @@ package log;
 
 import java.time.LocalDateTime;
 
-public class IptablesModel {
+public class IPtableLog {
         private LocalDateTime timestamp;   // Thời gian của mục log (khi gói tin được ghi lại)
         private String logPrefix;          // Mô tả hành động: ví dụ "Dropped DDoS", "Accept SSH", ...
         private String inInterface;        // Cổng vào (Interface In) của gói tin mạng
@@ -23,16 +23,16 @@ public class IptablesModel {
         private Integer urgp;              // URGP, chỉ định vị trí của dữ liệu trong gói tin TCP (nếu có)
 
 
-        public IptablesModel() {
+        public IPtableLog() {
 
         }
 
         // Constructor có tham số, khởi tạo một đối tượng LogEntry với các giá trị cụ thể
-        public IptablesModel(LocalDateTime timestamp, String logPrefix, String inInterface,
-                             String outInterface, String macAddress, String sourceIP, String destinationIP,
-                             String protocol, Integer sourcePort, Integer destinationPort,
-                             Integer length, String tos, String prec, Integer ttl, Integer id,
-                             Boolean df, Integer window, Integer urgp) {
+        public IPtableLog(LocalDateTime timestamp, String logPrefix, String inInterface,
+                          String outInterface, String macAddress, String sourceIP, String destinationIP,
+                          String protocol, Integer sourcePort, Integer destinationPort,
+                          Integer length, String tos, String prec, Integer ttl, Integer id,
+                          Boolean df, Integer window, Integer urgp) {
             this.timestamp = timestamp;
             this.logPrefix = logPrefix;
             this.inInterface = inInterface;

@@ -2,7 +2,6 @@ package controller;
 
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.fxml.FXML;
-import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.chart.*;
 import javafx.scene.control.*;
@@ -14,25 +13,17 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.cell.PropertyValueFactory;
 import log.*;
-import javafx.fxml.FXML;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.net.URL;
-import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.fxml.FXML;
-import javafx.scene.chart.*;
-import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
+
 import utils.IptablesLogProcessor;
 import utils.LogAnalyzer;
-import log.IptablesModel;
+import log.IPtableLog;
 import utils.FileUtils;
 
 import java.sql.Date;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -111,9 +102,9 @@ public class HomeController {
     @FXML
     private DatePicker toDate3;  // DatePicker for the end date
     @FXML
-    private TableView<LogEntry> logTable;  // TreeTableView for displaying search results
+    private TableView<ModsecLog> logTable;  // TreeTableView for displaying search results
     @FXML
-    private TableColumn<LogEntry, String> idColumn3, dateColumn3, timeColumn3, ipColumn3, statusColumn3, requestUriColumn3, userAgentColumn3, messageColumn3, actionColumn3;
+    private TableColumn<ModsecLog, String> idColumn3, dateColumn3, timeColumn3, ipColumn3, statusColumn3, requestUriColumn3, userAgentColumn3, messageColumn3, actionColumn3;
     @FXML
     private BarChart<String, Number> barChartMod;
     @FXML
@@ -137,29 +128,29 @@ public class HomeController {
 
     // Table columns
     @FXML
-    private TableView<IptablesModel> logTableIP;
+    private TableView<IPtableLog> logTableIP;
     @FXML
-    private TableColumn<IptablesModel, String> prefixColumnIPT;
+    private TableColumn<IPtableLog, String> prefixColumnIPT;
     @FXML
-    private TableColumn<IptablesModel, String> sourceIPColumnIPT;
+    private TableColumn<IPtableLog, String> sourceIPColumnIPT;
     @FXML
-    private TableColumn<IptablesModel, String> destinationIPColumnIPT;
+    private TableColumn<IPtableLog, String> destinationIPColumnIPT;
     @FXML
-    private TableColumn<IptablesModel, Number> sourcePortColumnIPT;
+    private TableColumn<IPtableLog, Number> sourcePortColumnIPT;
     @FXML
-    private TableColumn<IptablesModel, Number> destinationPortColumnIPT;
+    private TableColumn<IPtableLog, Number> destinationPortColumnIPT;
     @FXML
-    private TableColumn<IptablesModel, String> protocolColumnIPT;
+    private TableColumn<IPtableLog, String> protocolColumnIPT;
     @FXML
-    private TableColumn<IptablesModel, Number> lengthColumnIPT;
+    private TableColumn<IPtableLog, Number> lengthColumnIPT;
     @FXML
-    private TableColumn<IptablesModel, String> inInterfaceColumnIPT;
+    private TableColumn<IPtableLog, String> inInterfaceColumnIPT;
     @FXML
-    private TableColumn<IptablesModel, String> outInterfaceColumnIPT;
+    private TableColumn<IPtableLog, String> outInterfaceColumnIPT;
     @FXML
-    private TableColumn<IptablesModel, String> macColumnIPT;
+    private TableColumn<IPtableLog, String> macColumnIPT;
     @FXML
-    private TableColumn<IptablesModel, String> timestampColumnIPT; // hiển thị LocalDateTime as String
+    private TableColumn<IPtableLog, String> timestampColumnIPT; // hiển thị LocalDateTime as String
 
     // Filter controls
     @FXML
@@ -169,7 +160,7 @@ public class HomeController {
     @FXML
     private TextField searchFieldIPT;
 
-    private ObservableList<IptablesModel> masterData = FXCollections.observableArrayList();
+    private ObservableList<IPtableLog> masterData = FXCollections.observableArrayList();
 
     private final searchEngine searchEngine = new searchEngine();
 
@@ -549,7 +540,7 @@ public class HomeController {
     public void initialize2() {
         // Đọc file + parse
         List<String> rawLogs = FileUtils.readLogFile("src/main/resources/data/mergeok.txt");
-        List<IptablesModel> parsedLogs = IptablesLogProcessor.parseLogs(rawLogs);
+        List<IPtableLog> parsedLogs = IptablesLogProcessor.parseLogs(rawLogs);
 
         masterData.addAll(parsedLogs);
 
@@ -593,7 +584,7 @@ public class HomeController {
         String search = searchField.getText().trim().toLowerCase();
 
         // Filter
-        List<IptablesModel> filtered = masterData.stream()
+        List<IPtableLog> filtered = masterData.stream()
                 .filter(e -> {
                     // 1) search
                     if (!search.isEmpty()) {
@@ -621,14 +612,14 @@ public class HomeController {
                 })
                 .collect(Collectors.toList());
 
-        ObservableList<IptablesModel> filteredList = FXCollections.observableArrayList(filtered);
+        ObservableList<IPtableLog> filteredList = FXCollections.observableArrayList(filtered);
         logTableIP.setItems(filteredList);
 
         // Cập nhật chart
         updateStatistics(filteredList);
     }
 
-    private void updateStatistics(List<IptablesModel> data) {
+    private void updateStatistics(List<IPtableLog> data) {
         int totalReq = LogAnalyzer.calculateTotalRequests(data);
         int blocked  = LogAnalyzer.calculateBlockedRequests(data);
         long size    = LogAnalyzer.calculateThroughput(data);
@@ -641,7 +632,7 @@ public class HomeController {
         updateBarChart(data);
     }
 
-    private void updatePieChart(List<IptablesModel> data) {
+    private void updatePieChart(List<IPtableLog> data) {
         long droppedCount = data.stream()
                 .filter(e -> e.getLogPrefix() != null && e.getLogPrefix().toLowerCase().contains("dropped"))
                 .count();
@@ -658,7 +649,7 @@ public class HomeController {
         requestPieChartIPT.setData(pieData);
     }
 
-    private void updateBarChart(List<IptablesModel> data) {
+    private void updateBarChart(List<IPtableLog> data) {
         logBarChartIPT.getData().clear();
         Map<String, Long> prefixCount = data.stream()
                 .filter(e -> {
@@ -666,7 +657,7 @@ public class HomeController {
                     return p != null && !p.toLowerCase().contains("message repeated");
                 })
                 .collect(Collectors.groupingBy(
-                        IptablesModel::getLogPrefix,
+                        IPtableLog::getLogPrefix,
                         Collectors.counting()
                 ));
 
@@ -753,11 +744,11 @@ public class HomeController {
 
             // Tìm kiếm với các tham số đã lấy
             searchEngine s = new searchEngine();
-            ArrayList<LogEntry> results = s.SearchModsec(keyword, fromFormatted, toFormatted, "", "");
-            ObservableList<LogEntry> filteredData = FXCollections.observableArrayList();
+            ArrayList<ModsecLog> results = s.SearchModsec(keyword, fromFormatted, toFormatted, "", "");
+            ObservableList<ModsecLog> filteredData = FXCollections.observableArrayList();
             // Đưa dữ liệu vào TreeTableView
-            TreeItem<LogEntry> root = new TreeItem<>();
-            for (LogEntry entry : results) {
+            TreeItem<ModsecLog> root = new TreeItem<>();
+            for (ModsecLog entry : results) {
                 root.getChildren().add(new TreeItem<>(entry));
             }
             filteredData.clear();
@@ -772,7 +763,7 @@ public class HomeController {
             updateCharts(results);
 
     }
-    private void updateCharts(ArrayList<LogEntry> results) {
+    private void updateCharts(ArrayList<ModsecLog> results) {
             if (results == null || results.isEmpty()) {
                 barChartMod.getData().clear();
                 pieChartMod.getData().clear();
@@ -806,7 +797,7 @@ public class HomeController {
                 LocalDate singleDate = uniqueDates.get(0);
                 var hourlyDataMap = new TreeMap<String, Long>(); // Sắp xếp theo giờ
 
-                for (LogEntry entry : results) {
+                for (ModsecLog entry : results) {
                     String hour = entry.getTime().substring(0, 2); // Lấy giờ từ time (HH:mm:ss)
                     hourlyDataMap.put(hour, hourlyDataMap.getOrDefault(hour, 0L) + 1);
                 }
@@ -826,7 +817,7 @@ public class HomeController {
                 // Nếu có nhiều ngày, vẽ BarChart theo ngày
                 var dailyDataMap = new TreeMap<LocalDate, Long>(); // Sắp xếp theo ngày
 
-                for (LogEntry entry : results) {
+                for (ModsecLog entry : results) {
                     LocalDate date = LocalDate.parse(entry.getDate(), dateFormatter);
                     dailyDataMap.put(date, dailyDataMap.getOrDefault(date, 0L) + 1);
                 }
