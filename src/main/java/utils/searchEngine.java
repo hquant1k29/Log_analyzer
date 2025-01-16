@@ -19,6 +19,9 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 public class searchEngine implements Comparator<AccessLog> {
+
+    private int totalFailMoc = 0;
+    private int totalRequestMocsec;
     private int total = 0;
     private int totalFail = 0;
     private int tmpSize = 0;
@@ -39,7 +42,8 @@ public class searchEngine implements Comparator<AccessLog> {
         proto = new HashMap<>();
         statusMap = new int[600];
         System.out.println("Working Directory = " + System.getProperty("user.dir"));
-        String fileName = "src/main/resources/data/apache_logs.txt";
+        //String fileName = "src/main/resources/data/apache_logs.txt";
+        String fileName = "/var/log/apache2/access.log";
         // String fileName = "Apache_Log/src/main/resources/data/access1.txt";
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             String line;
@@ -81,6 +85,9 @@ public class searchEngine implements Comparator<AccessLog> {
                         String[] httpPro = temp.get(4).split("\\s+");
                         try {
                             total ++;
+                            if(temp5 >= 400){
+                                totalFail ++;
+                            }
                             timeMap.merge(date,1,Integer::sum);
                             timeMap.merge(date + time.substring(0,2),1,Integer::sum);
                             timeMap.merge(date + time.substring(0,5),1,Integer::sum);
@@ -147,6 +154,7 @@ public class searchEngine implements Comparator<AccessLog> {
     public ArrayList<LogEntry> SearchModsec(String pat, String beginDate, String endDate, String beginTime, String endTime) {
         ArrayList<LogEntry> results = new ArrayList<>();
         int count = 0;
+        totalFailMoc = 0;
         try (BufferedReader br = new BufferedReader(new FileReader("src/main/resources/data/modsec_logs.txt"))) {
             String line;
             StringBuilder currentBlock = new StringBuilder();
@@ -160,6 +168,9 @@ public class searchEngine implements Comparator<AccessLog> {
 
                             results.add(logEntry);
                             count++;
+                            if(Integer.parseInt(logEntry.getStatus()) >= 400){
+                                totalFailMoc ++;
+                            }
                         }
                         currentBlock.setLength(0); // Reset block
                     }
@@ -173,11 +184,13 @@ public class searchEngine implements Comparator<AccessLog> {
                 if (logEntry != null && matchesCriteria(logEntry, pat, beginDate, endDate, beginTime, endTime)) {
                     results.add(logEntry);
                     count++;
+                    totalFailMoc++;
                 }
             }
         } catch (IOException e) {
             System.err.println("Error reading log file: " + e.getMessage());
         }
+        totalRequestMocsec = count;
         System.out.println("Number of matching results: " + count); // Hiển thị số kết quả
         return results;
     }
@@ -357,6 +370,14 @@ public class searchEngine implements Comparator<AccessLog> {
     public int getTotal() {
         return total;
     }
-
+    public int getTotalRequestMocsec() {
+        return totalRequestMocsec;
+    }
+    public int getTotalFail() {
+        return totalFail;
+    }
+    public int getTotalFailMoc() {
+        return totalFailMoc;
+    }
 
 }

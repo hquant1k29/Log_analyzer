@@ -118,6 +118,11 @@ public class HomeController {
     private BarChart<String, Number> barChartMod;
     @FXML
     private PieChart pieChartMod;
+    @FXML
+    private Label totalRequestMocsec;
+    @FXML
+    private Label totalFailMocsec;
+
     // attribute of Iptable
     @FXML
     private Label totalRequestLabelIPT;
@@ -175,7 +180,7 @@ public class HomeController {
         modsec.setMouseTransparent(true);
         apache.setVisible(false);
         apache.setMouseTransparent(true);
-        //initialize1();
+        initialize1();
         initialize2();
         ipColumn.setCellValueFactory(new PropertyValueFactory<>("ip"));
         logColumn.setCellValueFactory(new PropertyValueFactory<>("log"));
@@ -199,6 +204,20 @@ public class HomeController {
             series2.getData().add(new XYChart.Data<>(hour + "h", 0));
         }
         TimeDetailChart.getData().add(series2);
+        LocalDate nowLocalDate = java.time.LocalDate.now();
+
+        searchEngine s = new searchEngine();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String nowDate = nowLocalDate.format(formatter);
+        System.out.println(nowDate);
+        beginDate.setValue(nowLocalDate);
+        endDate.setValue(nowLocalDate);
+        fromDate3.setValue(nowLocalDate);
+        toDate3.setValue(nowLocalDate);
+
+        this.Search();
+        this.handleSearch();
+        //s.SearchModsec("",nowDate,nowDate,"","");
         // switchChart(DateChart,TimeChart);
 //        searchEngine s = new searchEngine();
 //        s.Search("","2015-05-15","2015-05-25","","");
@@ -272,6 +291,7 @@ public class HomeController {
             String text = searchField.getText();
             nlist = s.Search(text,nbegin,nend,beginT,endT);
             toRequest.setText(Integer.toString(s.getTotal()));
+            toFail.setText(Integer.toString(s.getTotalFail()));
 
         } catch(NullPointerException e){
             System.out.println(e.getMessage());
@@ -293,6 +313,7 @@ public class HomeController {
                 drawChartByTime(nend,time);
             }
         }
+
         int [] statusMap = s.getStatusMap();
         HashMap<String,Integer> ipMap = s.getIpMap();
         drawPieChart(statusMap);
@@ -721,63 +742,108 @@ public class HomeController {
         String keyword = searchTextField3.getText();
         LocalDate from = fromDate3.getValue();  // Lấy giá trị từ DatePicker (LocalDate)
         LocalDate to = toDate3.getValue();      // Lấy giá trị từ DatePicker (LocalDate)
-
-        // Nếu từ ngày và đến ngày không null, chuyển đổi chúng thành định dạng phù hợp
-        String fromFormatted = from != null ? from.format(DateTimeFormatter.ofPattern("dd/MMM/yyyy", Locale.ENGLISH)) : "";
-        String toFormatted = to != null ? to.format(DateTimeFormatter.ofPattern("dd/MMM/yyyy", Locale.ENGLISH)) : "";
-
-        // Tìm kiếm với các tham số đã lấy
-        ArrayList<LogEntry> results = searchEngine.SearchModsec(keyword, fromFormatted, toFormatted, "", "");
-        ObservableList<LogEntry> filteredData = FXCollections.observableArrayList();
-        // Đưa dữ liệu vào TreeTableView
-        TreeItem<LogEntry> root = new TreeItem<>();
-        for (LogEntry entry : results) {
-            root.getChildren().add(new TreeItem<>(entry));
+        if (from != null && to == null) {
+            to = LocalDate.now();
+        } else if (from == null && to != null) {
+            from = LocalDate.of(1900, 1, 1); // Chọn một mốc thời gian rất sớm
         }
-        filteredData.clear();
+            // Nếu từ ngày và đến ngày không null, chuyển đổi chúng thành định dạng phù hợp
+            String fromFormatted = from != null ? from.format(DateTimeFormatter.ofPattern("dd/MMM/yyyy", Locale.ENGLISH)) : "";
+            String toFormatted = to != null ? to.format(DateTimeFormatter.ofPattern("dd/MMM/yyyy", Locale.ENGLISH)) : "";
+
+            // Tìm kiếm với các tham số đã lấy
+            searchEngine s = new searchEngine();
+            ArrayList<LogEntry> results = s.SearchModsec(keyword, fromFormatted, toFormatted, "", "");
+            ObservableList<LogEntry> filteredData = FXCollections.observableArrayList();
+            // Đưa dữ liệu vào TreeTableView
+            TreeItem<LogEntry> root = new TreeItem<>();
+            for (LogEntry entry : results) {
+                root.getChildren().add(new TreeItem<>(entry));
+            }
+            filteredData.clear();
 //        for(int i = 0; i <= 2; i++){
 //            filteredData.add(results.get(i));
 //        }
-        filteredData.addAll(results);
-        logTable.setItems(filteredData);
+            filteredData.addAll(results);
+            logTable.setItems(filteredData);
+            totalRequestMocsec.setText(Integer.toString(s.getTotalRequestMocsec()));
+            totalFailMocsec.setText(Integer.toString(s.getTotalFailMoc()));
+            // Cập nhật biểu đồ
+            updateCharts(results);
 
-        // Cập nhật biểu đồ
-        updateCharts(results);
     }
-
     private void updateCharts(ArrayList<LogEntry> results) {
-        // Cập nhật PieChart
-        pieChartMod.getData().clear();
-        long successCount = results.stream().filter(e -> "200".equals(e.getStatus())).count();
-        long failCount = results.size() - successCount;
+            if (results == null || results.isEmpty()) {
+                barChartMod.getData().clear();
+                pieChartMod.getData().clear();
+                return;
+            }
 
-        pieChartMod.getData().addAll(
-                new PieChart.Data("Success", successCount),
-                new PieChart.Data("Fail", failCount)
-        );
+            // Cập nhật PieChart
+            pieChartMod.getData().clear();
+            long successCount = results.stream().filter(e -> "200".equals(e.getStatus())).count();
+            long failCount = results.size() - successCount;
 
-        // Cập nhật BarChart
-        barChartMod.getData().clear();
+            pieChartMod.getData().addAll(
+                    new PieChart.Data("Success", successCount),
+                    new PieChart.Data("Fail", failCount)
+            );
 
-        // Sử dụng TreeMap để tự động sắp xếp theo ngày
-        var dataMap = new TreeMap<LocalDate, Long>();
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            // Cập nhật BarChart
+            barChartMod.getData().clear();
 
-        for (LogEntry entry : results) {
-            LocalDate date = LocalDate.parse(entry.getDate(), dateFormatter);
-            dataMap.put(date, dataMap.getOrDefault(date, 0L) + 1);
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH");
+
+            // Kiểm tra xem tất cả các log có cùng một ngày hay không
+            var uniqueDates = results.stream()
+                    .map(entry -> LocalDate.parse(entry.getDate(), dateFormatter))
+                    .distinct()
+                    .toList();
+
+            if (uniqueDates.size() == 1) {
+                // Nếu chỉ có một ngày, vẽ BarChart theo giờ
+                LocalDate singleDate = uniqueDates.get(0);
+                var hourlyDataMap = new TreeMap<String, Long>(); // Sắp xếp theo giờ
+
+                for (LogEntry entry : results) {
+                    String hour = entry.getTime().substring(0, 2); // Lấy giờ từ time (HH:mm:ss)
+                    hourlyDataMap.put(hour, hourlyDataMap.getOrDefault(hour, 0L) + 1);
+                }
+
+                // Tạo series mới
+                var series = new javafx.scene.chart.XYChart.Series<String, Number>();
+                series.setName(singleDate.format(dateFormatter)); // Đặt tên là ngày hiện tại
+
+                for (var entry : hourlyDataMap.entrySet()) {
+                    series.getData().add(new javafx.scene.chart.XYChart.Data<>(entry.getKey() + ":00", entry.getValue()));
+                }
+
+                // Thêm series vào BarChart
+                barChartMod.getData().add(series);
+
+            } else {
+                // Nếu có nhiều ngày, vẽ BarChart theo ngày
+                var dailyDataMap = new TreeMap<LocalDate, Long>(); // Sắp xếp theo ngày
+
+                for (LogEntry entry : results) {
+                    LocalDate date = LocalDate.parse(entry.getDate(), dateFormatter);
+                    dailyDataMap.put(date, dailyDataMap.getOrDefault(date, 0L) + 1);
+                }
+
+                // Tạo series mới
+                var series = new javafx.scene.chart.XYChart.Series<String, Number>();
+                series.setName("Daily Logs"); // Đặt tên là "Daily Logs"
+
+                for (var entry : dailyDataMap.entrySet()) {
+                    String formattedDate = entry.getKey().format(dateFormatter); // Chuyển ngày lại thành chuỗi để hiển thị
+                    series.getData().add(new javafx.scene.chart.XYChart.Data<>(formattedDate, entry.getValue()));
+                }
+
+                // Thêm series vào BarChart
+                barChartMod.getData().add(series);
+
+            }
         }
-
-        // Tạo series mới
-        var series = new javafx.scene.chart.XYChart.Series<String, Number>();
-        for (var entry : dataMap.entrySet()) {
-            String formattedDate = entry.getKey().format(dateFormatter); // Chuyển ngày lại thành chuỗi để hiển thị
-            series.getData().add(new javafx.scene.chart.XYChart.Data<>(formattedDate, entry.getValue()));
-        }
-
-        // Thêm series vào BarChart
-        barChartMod.getData().add(series);
-
-    }
 
 }
