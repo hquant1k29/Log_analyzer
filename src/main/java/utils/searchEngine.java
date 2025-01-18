@@ -3,15 +3,13 @@ import log.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import log.ModsecLog;
-import java.time.LocalDate;
-import java.time.Month;
+
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -152,7 +150,8 @@ public class searchEngine implements Comparator<AccessLog> {
         ArrayList<ModsecLog> results = new ArrayList<>();
         int count = 0;
         totalFailMoc = 0;
-        try (BufferedReader br = new BufferedReader(new FileReader("src/main/resources/data/modsec_logs.txt"))) {
+        //src/main/resources/data/apache_logs.txt  /var/log/apache2/modsec_audit.log
+        try (BufferedReader br = new BufferedReader(new FileReader("/var/log/apache2/modsec_audit.log"))) {
             String line;
             StringBuilder currentBlock = new StringBuilder();
 
@@ -274,26 +273,39 @@ public class searchEngine implements Comparator<AccessLog> {
                 // Lấy timestamp
                 String timestamp = logBlock.split("\\[")[1].split("\\]")[0];
                 String[] timestampParts = timestamp.split(":", 2);
-                date = timestampParts[0];
+                date = timestampParts[0]; // date = 17/Jan/2025
+                System.out.println("CHUNG MINH:" + date);
 
-                if (date.length() > 2) {
-                    // Tách ngày, tháng, năm
-                    String[] dateParts = date.split("/");
-                    dayDate = dateParts[0];
-                    monthDate = dateParts[1];
-                    yearDate = dateParts[2];
+                DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("dd/MMM/yyyy");
 
-                    // Xử lý tên tháng (chuyển sang viết hoa và lấy giá trị tháng)
-                    Month month = Month.valueOf(monthDate.toUpperCase()); // Tháng phải viết hoa đầy đủ
-                    monthDateNew = month.getValue(); // Lấy số tháng
-                    if (monthDateNew > 0 && monthDateNew < 10) {
-                        monthPart += "0" + monthDateNew;
-                    }
+                // Định dạng output mong muốn: dd/MM/yyyy
+                DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-                }
+                // Phân tích và chuyển đổi ngày (chú ý dùng LocalDate thay vì ZonedDateTime)
+                LocalDate unFormatDateTime = LocalDate.parse(date, inputFormatter);
+
+                // Định dạng lại ngày theo output
+                date = unFormatDateTime.format(outputFormatter);
+                    System.out.println("Da doi" + date);
 
 
-                date = dayDate + "/" + monthPart + "/" + yearDate;
+//                    // Tách ngày, tháng, năm
+//                    String[] dateParts = date.split("/");
+//                    dayDate = dateParts[0];
+//                    monthDate = dateParts[1];
+//                    yearDate = dateParts[2];
+//
+//                    // Xử lý tên tháng (chuyển sang viết hoa và lấy giá trị tháng)
+//                    Month month = Month.valueOf(monthDate.toUpperCase()); // Tháng phải viết hoa đầy đủ
+//                    monthDateNew = month.getValue(); // Lấy số tháng
+//                    if (monthDateNew > 0 && monthDateNew < 10) {
+//                        monthPart += "0" + monthDateNew;
+//                    }
+
+
+
+
+               // date = dayDate + "/" + monthPart + "/" + yearDate;
                 // time = timestampParts.length > 1 ? timestampParts[1] : "";
                 if (timestampParts.length > 1) {
                     String[] timepart = timestampParts[1].split(" ", 2);
@@ -306,6 +318,7 @@ public class searchEngine implements Comparator<AccessLog> {
                     time = "";
                 }
             } catch (Exception e) {
+                System.out.println(e.getMessage());
                 // Xử lý lỗi nếu timestamp không hợp lệ
             }
         }
@@ -335,6 +348,13 @@ public class searchEngine implements Comparator<AccessLog> {
 
         // Action
         String action = extractField(logBlock, "Action:");
+        System.out.println(id);
+        System.out.println(date);
+        System.out.println(time);
+        System.out.println(clientIp);
+        System.out.println(status);
+        System.out.println(requestUri);
+        System.out.println(date);
 
         // Tạo và trả về đối tượng LogEntry
         return new ModsecLog(id, date, time, clientIp, status, requestUri, userAgent, message, action);
